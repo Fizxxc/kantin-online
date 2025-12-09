@@ -23,6 +23,9 @@
     <!-- QuaggaJS for Barcode Scanner -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
+    <!-- Chart.js for Statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Security Meta Tags -->
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; img-src 'self' data: https://picsum.photos https://*.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://*.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com; media-src 'self' blob:;">
@@ -33,6 +36,61 @@
 
         * {
             font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+
+        .stats-card:hover::before {
+            top: -100%;
+            right: -100%;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stats-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
         }
 
         .menu-card {
@@ -112,7 +170,8 @@
             margin: 0 auto;
             overflow: hidden;
             border: 2px solid #ddd;
-            border-radius: 8px;
+            border-radius: 15px;
+            background: #000;
         }
 
         #scanner-container video {
@@ -140,7 +199,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 15px;
             text-align: center;
             margin: 20px 0;
         }
@@ -165,6 +224,61 @@
             border: 4px solid #e5e7eb;
         }
 
+        /* Role Management Styles */
+        .role-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-admin {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .role-staff {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .role-user {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        /* Order Status Styles */
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #feca57, #ff9ff3);
+            color: #2c2c54;
+        }
+
+        .status-processing {
+            background: linear-gradient(135deg, #48dbfb, #0abde3);
+            color: white;
+        }
+
+        .status-ready {
+            background: linear-gradient(135deg, #1dd1a1, #10ac84);
+            color: white;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #a4b0be, #57606f);
+            color: white;
+        }
+
         /* Security styles */
         .no-select {
             -webkit-user-select: none;
@@ -181,6 +295,104 @@
             -webkit-touch-callout: none;
         }
 
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #1dd1a1, #10ac84);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #feca57, #ff9ff3);
+            color: #2c2c54;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Table Styles */
+        .admin-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .admin-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .admin-table tr:hover {
+            background: #f9fafb;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1.5rem;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .container {
@@ -188,12 +400,18 @@
                 padding-right: 1rem;
             }
 
-            #menuGrid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .admin-table {
+                font-size: 0.875rem;
+            }
+
+            .admin-table th,
+            .admin-table td {
+                padding: 0.5rem;
             }
         }
 
@@ -214,146 +432,369 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 
-<body class="bg-gray-100">
+<body>
     <!-- Admin Login Page -->
-    <div id="adminLoginPage"
-        class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-600">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-96">
-            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">
-                <i class="fas fa-user-shield text-purple-500 mr-2"></i>Login Admin
-            </h2>
+    <div id="adminLoginPage" class="min-h-screen flex items-center justify-center">
+        <div class="admin-container p-8 w-96">
+            <div class="text-center mb-8">
+                <i class="fas fa-user-shield text-6xl text-purple-600 mb-4"></i>
+                <h2 class="text-3xl font-bold text-gray-800">Admin Dashboard</h2>
+                <p class="text-gray-600">Kantin Digital Sekolah</p>
+            </div>
 
             <form id="adminLoginForm" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Admin</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <input type="email" id="adminEmail" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Password Admin</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                     <input type="password" id="adminPassword" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
                 </div>
 
-                <button type="submit"
-                    class="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition duration-300 font-medium">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Masuk Admin
+                <button type="submit" class="w-full btn-primary">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Masuk
                 </button>
             </form>
         </div>
     </div>
 
     <!-- Admin Dashboard -->
-    <div id="adminDashboard" class="hidden">
-        <header class="bg-purple-600 text-white shadow-md">
-            <div class="container mx-auto px-4 py-4">
+    <div id="adminDashboard" class="hidden min-h-screen p-4">
+        <div class="container mx-auto">
+            <!-- Header -->
+            <header class="admin-container mb-6 p-6">
                 <div class="flex justify-between items-center">
-                    <h1 class="text-2xl font-bold">
-                        <i class="fas fa-tachometer-alt mr-2"></i>Admin Dashboard
-                    </h1>
-                    <button onclick="adminLogout()"
-                        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Keluar
+                    <div class="flex items-center space-x-4">
+                        <i class="fas fa-tachometer-alt text-3xl text-purple-600"></i>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+                            <p class="text-gray-600">Kantin Digital Sekolah</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right">
+                            <p class="text-sm text-gray-600">Welcome back,</p>
+                            <p id="adminName" class="font-semibold text-gray-800">Admin</p>
+                            <span id="adminRole" class="role-badge role-admin text-xs">Admin</span>
+                        </div>
+                        <button onclick="adminLogout()" class="btn-danger">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Keluar
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main>
+                <!-- Stats Cards -->
+                <div class="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stats-card">
+                        <i class="fas fa-shopping-cart stats-icon"></i>
+                        <p class="text-sm opacity-80">Total Pesanan Hari Ini</p>
+                        <p class="stats-number" id="totalOrders">0</p>
+                        <p class="text-xs opacity-60">
+                            <i class="fas fa-arrow-up"></i> 12% dari kemarin
+                        </p>
+                    </div>
+
+                    <div class="stats-card">
+                        <i class="fas fa-money-bill-wave stats-icon"></i>
+                        <p class="text-sm opacity-80">Pendapatan Hari Ini</p>
+                        <p class="stats-number" id="totalRevenue">Rp 0</p>
+                        <p class="text-xs opacity-60">
+                            <i class="fas fa-arrow-up"></i> 8% dari kemarin
+                        </p>
+                    </div>
+
+                    <div class="stats-card">
+                        <i class="fas fa-list-ol stats-icon"></i>
+                        <p class="text-sm opacity-80">Antrian Aktif</p>
+                        <p class="stats-number" id="activeQueue">0</p>
+                        <p class="text-xs opacity-60">
+                            <i class="fas fa-clock"></i> Real-time
+                        </p>
+                    </div>
+
+                    <div class="stats-card">
+                        <i class="fas fa-users stats-icon"></i>
+                        <p class="text-sm opacity-80">Total Pengguna</p>
+                        <p class="stats-number" id="totalUsers">0</p>
+                        <p class="text-xs opacity-60">
+                            <i class="fas fa-user-plus"></i> +5 hari ini
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="chart-container">
+                        <h3 class="text-lg font-semibold mb-4">Grafik Penjualan Mingguan</h3>
+                        <canvas id="salesChart" width="400" height="200"></canvas>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3 class="text-lg font-semibold mb-4">Distribusi Menu</h3>
+                        <canvas id="menuChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <button onclick="showUserManagement()"
+                        class="admin-container p-6 text-left hover:shadow-lg transition">
+                        <i class="fas fa-users-cog text-3xl text-purple-600 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">Kelola User</h3>
+                        <p class="text-gray-600 text-sm">Atur role dan akses user</p>
+                    </button>
+
+                    <button onclick="showMenuManagement()"
+                        class="admin-container p-6 text-left hover:shadow-lg transition">
+                        <i class="fas fa-utensils text-3xl text-green-600 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">Kelola Menu</h3>
+                        <p class="text-gray-600 text-sm">Tambah/edit menu makanan</p>
+                    </button>
+
+                    <button onclick="showReports()" class="admin-container p-6 text-left hover:shadow-lg transition">
+                        <i class="fas fa-chart-line text-3xl text-blue-600 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">Laporan</h3>
+                        <p class="text-gray-600 text-sm">Lihat laporan penjualan</p>
                     </button>
                 </div>
-            </div>
-        </header>
 
-        <main class="container mx-auto px-4 py-8">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm">Total Pesanan Hari Ini</p>
-                            <p class="text-2xl font-bold" id="totalOrders">0</p>
+                <!-- Barcode Scanner Section -->
+                <div class="admin-container mb-8">
+                    <div class="p-6 border-b">
+                        <h2 class="text-xl font-bold flex items-center">
+                            <i class="fas fa-qrcode mr-3 text-purple-600"></i>Scanner Barcode
+                        </h2>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="text-center">
+                            <button onclick="startBarcodeScanner()" class="btn-primary mb-4">
+                                <i class="fas fa-qrcode mr-2"></i>Scan Barcode
+                            </button>
+
+                            <div id="barcodeScanner" class="hidden">
+                                <div id="scanner-container" class="mx-auto"></div>
+                                <button onclick="stopBarcodeScanner()" class="btn-danger mt-4">
+                                    <i class="fas fa-stop mr-2"></i>Stop Scanner
+                                </button>
+                            </div>
+
+                            <div id="scanResult" class="mt-4 hidden">
+                                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                                    <p class="text-lg">Hasil Scan: <span id="scannedCode" class="font-bold"></span></p>
+                                </div>
+                            </div>
                         </div>
-                        <i class="fas fa-shopping-cart text-3xl text-blue-500"></i>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm">Pendapatan Hari Ini</p>
-                            <p class="text-2xl font-bold" id="totalRevenue">Rp 0</p>
+                <!-- Orders List -->
+                <div class="admin-container">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-bold flex items-center">
+                                <i class="fas fa-clipboard-list mr-3 text-purple-600"></i>Daftar Pesanan
+                            </h2>
+                            <div class="flex space-x-2">
+                                <button onclick="filterOrders('all')"
+                                    class="filter-btn px-4 py-2 rounded-lg bg-purple-600 text-white text-sm">Semua</button>
+                                <button onclick="filterOrders('pending')"
+                                    class="filter-btn px-4 py-2 rounded-lg bg-gray-300 text-gray-700 text-sm">Pending</button>
+                                <button onclick="filterOrders('processing')"
+                                    class="filter-btn px-4 py-2 rounded-lg bg-gray-300 text-gray-700 text-sm">Processing</button>
+                                <button onclick="filterOrders('ready')"
+                                    class="filter-btn px-4 py-2 rounded-lg bg-gray-300 text-gray-700 text-sm">Ready</button>
+                            </div>
                         </div>
-                        <i class="fas fa-money-bill-wave text-3xl text-green-500"></i>
+                    </div>
+
+                    <div class="p-6">
+                        <div id="ordersList" class="space-y-4">
+                            <!-- Orders will be dynamically loaded here -->
+                        </div>
+
+                        <div id="noOrders" class="text-center py-12">
+                            <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500">Belum ada pesanan</p>
+                        </div>
                     </div>
                 </div>
+            </main>
+        </div>
+    </div>
 
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm">Antrian Aktif</p>
-                            <p class="text-2xl font-bold" id="activeQueue">0</p>
-                        </div>
-                        <i class="fas fa-list-ol text-3xl text-yellow-500"></i>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm">Total Pengguna</p>
-                            <p class="text-2xl font-bold" id="totalUsers">0</p>
-                        </div>
-                        <i class="fas fa-users text-3xl text-purple-500"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Barcode Scanner Section -->
-            <div class="bg-white rounded-lg shadow-md mb-8">
-                <div class="p-6 border-b">
-                    <h2 class="text-xl font-bold">Scanner Barcode</h2>
+    <!-- User Management Modal -->
+    <div id="userManagementModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="modal-content max-w-4xl w-full max-h-[80vh] overflow-hidden">
+                <div class="modal-header">
+                    <h3 class="text-2xl font-bold flex items-center justify-between">
+                        <span><i class="fas fa-users-cog mr-2"></i>Kelola User</span>
+                        <button onclick="hideUserManagement()" class="text-white hover:text-gray-200">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </h3>
                 </div>
 
                 <div class="p-6">
-                    <div class="text-center">
-                        <button onclick="startBarcodeScanner()"
-                            class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition mb-4">
-                            <i class="fas fa-qrcode mr-2"></i>Scan Barcode
-                        </button>
-
-                        <div id="barcodeScanner" class="hidden">
-                            <div id="scanner-container" class="mx-auto" style="max-width: 640px;"></div>
-                            <button onclick="stopBarcodeScanner()"
-                                class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition mt-4">
-                                <i class="fas fa-stop mr-2"></i>Stop Scanner
+                    <!-- Add User Section -->
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <h4 class="text-lg font-semibold mb-4">Tambah User Baru</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <input type="text" id="newUserName" placeholder="Nama Lengkap"
+                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="email" id="newUserEmail" placeholder="Email"
+                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <select id="newUserRole"
+                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <option value="user">User</option>
+                                <option value="staff">Staff</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            <button onclick="addNewUser()" class="btn-primary">
+                                <i class="fas fa-plus mr-2"></i>Tambah
                             </button>
                         </div>
+                    </div>
 
-                        <div id="scanResult" class="mt-4 hidden">
-                            <p class="text-lg">Hasil Scan: <span id="scannedCode"
-                                    class="font-bold text-blue-600"></span></p>
-                        </div>
+                    <!-- Users List -->
+                    <div class="overflow-x-auto">
+                        <table class="admin-table w-full">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Total Pesanan</th>
+                                    <th>Total Pengeluaran</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersList">
+                                <!-- Users will be dynamically loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="noUsers" class="text-center py-12 hidden">
+                        <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500">Belum ada user</p>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Orders List -->
-            <div class="bg-white rounded-lg shadow-md">
-                <div class="p-6 border-b">
-                    <h2 class="text-xl font-bold">Daftar Pesanan</h2>
+    <!-- Menu Management Modal -->
+    <div id="menuManagementModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="modal-content max-w-4xl w-full max-h-[80vh] overflow-hidden">
+                <div class="modal-header">
+                    <h3 class="text-2xl font-bold flex items-center justify-between">
+                        <span><i class="fas fa-utensils mr-2"></i>Kelola Menu</span>
+                        <button onclick="hideMenuManagement()" class="text-white hover:text-gray-200">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </h3>
                 </div>
 
                 <div class="p-6">
-                    <div id="ordersList" class="space-y-4">
-                        <!-- Orders will be dynamically loaded here -->
+                    <!-- Add Menu Section -->
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <h4 class="text-lg font-semibold mb-4">Tambah Menu Baru</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                            <input type="text" id="newMenuName" placeholder="Nama Menu"
+                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="number" id="newMenuPrice" placeholder="Harga"
+                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <select id="newMenuCategory"
+                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <option value="makanan">Makanan</option>
+                                <option value="minuman">Minuman</option>
+                                <option value="snack">Snack</option>
+                            </select>
+                            <input type="url" id="newMenuImage" placeholder="URL Gambar"
+                                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <button onclick="addNewMenu()" class="btn-primary">
+                                <i class="fas fa-plus mr-2"></i>Tambah
+                            </button>
+                        </div>
                     </div>
 
-                    <div id="noOrders" class="text-center py-12">
-                        <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500">Belum ada pesanan</p>
+                    <!-- Menu List -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="menuList">
+                        <!-- Menu items will be dynamically loaded here -->
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+    </div>
+
+    <!-- Reports Modal -->
+    <div id="reportsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="modal-content max-w-6xl w-full max-h-[80vh] overflow-hidden">
+                <div class="modal-header">
+                    <h3 class="text-2xl font-bold flex items-center justify-between">
+                        <span><i class="fas fa-chart-line mr-2"></i>Laporan Penjualan</span>
+                        <button onclick="hideReports()" class="text-white hover:text-gray-200">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </h3>
+                </div>
+
+                <div class="p-6">
+                    <!-- Date Range Selector -->
+                    <div class="mb-6 flex items-center space-x-4">
+                        <input type="date" id="reportStartDate" class="px-4 py-2 border border-gray-300 rounded-lg">
+                        <span class="text-gray-600">sampai</span>
+                        <input type="date" id="reportEndDate" class="px-4 py-2 border border-gray-300 rounded-lg">
+                        <button onclick="generateReport()" class="btn-primary">
+                            <i class="fas fa-file-alt mr-2"></i>Generate Laporan
+                        </button>
+                    </div>
+
+                    <!-- Report Content -->
+                    <div id="reportContent">
+                        <!-- Report will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Audio for notifications -->
@@ -362,16 +803,14 @@
     </audio>
 
     <script>
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyAKF1eXOowCS35ylhonxvdy9QBiLYLmvzY",
-            authDomain: "crht-proj.firebaseapp.com",
-            databaseURL: "https://crht-proj-default-rtdb.firebaseio.com",
-            projectId: "crht-proj",
-            storageBucket: "crht-proj.firebasestorage.app",
-            messagingSenderId: "957104910274",
-            appId: "1:957104910274:web:5a7463a011d5f68583305b",
-            measurementId: "G-4BTK874XF4"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         // Initialize Firebase
@@ -381,8 +820,15 @@
 
         // Global Variables
         let currentUser = null;
+        let currentUserRole = null;
+        let currentUserData = null;
         let orders = [];
+        let users = [];
+        let menuItems = [];
         let scanner = null;
+        let salesChart = null;
+        let menuChart = null;
+        let currentOrderFilter = 'all';
 
         // Security: Prevent right-click and inspect
         document.addEventListener('contextmenu', e => e.preventDefault());
@@ -439,18 +885,18 @@
 
         // Show loading
         function showLoading() {
-            Swal.fire({
-                title: 'Loading...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.className = 'loading-overlay';
+            loadingOverlay.innerHTML = '<div class="loading-spinner"></div>';
+            document.body.appendChild(loadingOverlay);
         }
 
         // Hide loading
         function hideLoading() {
-            Swal.close();
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.remove();
+            }
         }
 
         // Show success message
@@ -484,10 +930,12 @@
 
         // Security: Validate admin access
         function validateAdminAccess() {
-            if (currentUser && currentUser.email === 'admin@kantin.com') {
-                return true;
-            }
-            return false;
+            return currentUserRole === 'admin';
+        }
+
+        // Security: Validate staff access
+        function validateStaffAccess() {
+            return currentUserRole === 'staff' || currentUserRole === 'admin';
         }
 
         // Authentication Functions
@@ -533,39 +981,30 @@
             // Load admin data
             loadAdminData();
 
+            // Initialize charts
+            initializeCharts();
+
             // Listen for orders
             listenForOrders();
 
-            // Initialize queue counter
-            initializeQueueCounter();
+            // Load menu items
+            loadMenuItems();
         }
-
-        // Initialize auth state listener
-        auth.onAuthStateChanged(user => {
-            currentUser = user;
-
-            // Check if we're on admin page
-            if (window.location.pathname.includes('admin.html')) {
-                if (user && user.email === 'admin@kantin.com') {
-                    showAdminDashboard();
-                } else {
-                    // Redirect to user app if not admin
-                    window.location.href = 'index.html';
-                }
-            }
-        });
-
-        // Admin Dashboard Functions
 
         // Load admin data
         function loadAdminData() {
             if (!validateAdminAccess()) return;
 
+            // Load admin profile
+            if (currentUserData) {
+                document.getElementById('adminName').textContent = currentUserData.name;
+                const roleBadge = document.getElementById('adminRole');
+                roleBadge.textContent = currentUserData.role.charAt(0).toUpperCase() + currentUserData.role.slice(1);
+                roleBadge.className = `role-badge role-${currentUserData.role} text-xs`;
+            }
+
             // Load stats
             loadAdminStats();
-
-            // Load orders
-            loadOrders();
         }
 
         // Load admin statistics
@@ -602,6 +1041,78 @@
                 .then(snapshot => {
                     document.getElementById('totalUsers').textContent = snapshot.size;
                 });
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            if (!validateAdminAccess()) return;
+
+            // Sales Chart
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
+                    datasets: [{
+                        label: 'Penjualan',
+                        data: [1200000, 1900000, 1500000, 2100000, 2400000, 1800000, 2200000],
+                        borderColor: 'rgb(102, 126, 234)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return 'Rp ' + value.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Menu Distribution Chart
+            const menuCtx = document.getElementById('menuChart').getContext('2d');
+            menuChart = new Chart(menuCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Makanan', 'Minuman', 'Snack'],
+                    datasets: [{
+                        data: [45, 35, 20],
+                        backgroundColor: [
+                            'rgba(255, 107, 107, 0.8)',
+                            'rgba(78, 205, 196, 0.8)',
+                            'rgba(102, 126, 234, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 107, 107, 1)',
+                            'rgba(78, 205, 196, 1)',
+                            'rgba(102, 126, 234, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
         }
 
         // Listen for orders
@@ -645,35 +1156,40 @@
             const ordersList = document.getElementById('ordersList');
             const noOrders = document.getElementById('noOrders');
 
-            if (orders.length === 0) {
+            let filteredOrders = orders;
+            if (currentOrderFilter !== 'all') {
+                filteredOrders = orders.filter(order => order.status === currentOrderFilter);
+            }
+
+            if (filteredOrders.length === 0) {
                 ordersList.innerHTML = '';
                 noOrders.classList.remove('hidden');
             } else {
                 noOrders.classList.add('hidden');
                 ordersList.innerHTML = '';
 
-                orders.forEach(order => {
+                filteredOrders.forEach(order => {
                     const orderItem = document.createElement('div');
-                    orderItem.className = 'border rounded-lg p-4 hover:shadow-md transition no-select';
+                    orderItem.className = 'admin-container p-4';
 
-                    let statusColor = '';
+                    let statusClass = '';
                     let statusText = '';
 
                     switch (order.status) {
                         case 'pending':
-                            statusColor = 'bg-yellow-100 text-yellow-800';
+                            statusClass = 'status-pending';
                             statusText = 'Menunggu';
                             break;
                         case 'processing':
-                            statusColor = 'bg-blue-100 text-blue-800';
+                            statusClass = 'status-processing';
                             statusText = 'Diproses';
                             break;
                         case 'ready':
-                            statusColor = 'bg-green-100 text-green-800';
+                            statusClass = 'status-ready';
                             statusText = 'Siap Diambil';
                             break;
                         case 'completed':
-                            statusColor = 'bg-gray-100 text-gray-800';
+                            statusClass = 'status-completed';
                             statusText = 'Selesai';
                             break;
                     }
@@ -684,7 +1200,7 @@
                                 <h4 class="font-semibold">Pesanan #${order.queueNumber}</h4>
                                 <p class="text-sm text-gray-600">${formatDate(order.createdAt.toDate())}</p>
                             </div>
-                            <span class="px-3 py-1 rounded-full text-sm font-medium ${statusColor}">
+                            <span class="status-badge ${statusClass}">
                                 ${statusText}
                             </span>
                         </div>
@@ -702,20 +1218,20 @@
                             <p class="font-bold text-lg">${formatCurrency(order.total)}</p>
                             <div class="space-x-2">
                                 ${order.status === 'pending' ? `
-                                    <button onclick="updateOrderStatus('${order.id}', 'processing')" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">
+                                    <button onclick="updateOrderStatus('${order.id}', 'processing')" class="btn-primary text-sm">
                                         Proses
                                     </button>
                                 ` : ''}
                                 ${order.status === 'processing' ? `
-                                    <button onclick="updateOrderStatus('${order.id}', 'ready')" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition">
+                                    <button onclick="updateOrderStatus('${order.id}', 'ready')" class="btn-success text-sm">
                                         Siap
                                     </button>
-                                    <button onclick="callOrder('${order.id}')" class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition">
+                                    <button onclick="callOrder('${order.id}')" class="btn-warning text-sm">
                                         <i class="fas fa-bell mr-1"></i>Panggil
                                     </button>
                                 ` : ''}
                                 ${order.status === 'ready' ? `
-                                    <button onclick="updateOrderStatus('${order.id}', 'completed')" class="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600 transition">
+                                    <button onclick="updateOrderStatus('${order.id}', 'completed')" class="btn-primary text-sm">
                                         Selesai
                                     </button>
                                 ` : ''}
@@ -725,6 +1241,22 @@
                     ordersList.appendChild(orderItem);
                 });
             }
+        }
+
+        // Filter orders
+        function filterOrders(status) {
+            currentOrderFilter = status;
+
+            // Update button styles
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white');
+                btn.classList.add('bg-gray-300', 'text-gray-700');
+            });
+
+            event.target.classList.remove('bg-gray-300', 'text-gray-700');
+            event.target.classList.add('bg-purple-600', 'text-white');
+
+            updateOrdersUI();
         }
 
         // Update order status
@@ -787,20 +1319,531 @@
             await createNotification(userId, 'Pesanan Siap Diambil!', message, 'queue');
         }
 
-        // Initialize queue counter
-        async function initializeQueueCounter() {
-            try {
-                const queueDoc = await db.collection('counters').doc('queue').get();
+        // User Management Functions
 
-                if (!queueDoc.exists) {
-                    await db.collection('counters').doc('queue').set({
-                        count: 0,
-                        lastReset: firebase.firestore.FieldValue.serverTimestamp()
+        // Show user management modal
+        function showUserManagement() {
+            if (!validateAdminAccess()) return;
+
+            document.getElementById('userManagementModal').classList.remove('hidden');
+            loadUsers();
+        }
+
+        // Hide user management modal
+        function hideUserManagement() {
+            document.getElementById('userManagementModal').classList.add('hidden');
+        }
+
+        // Load users
+        function loadUsers() {
+            if (!validateAdminAccess()) return;
+
+            db.collection('users').get()
+                .then(snapshot => {
+                    users = [];
+                    snapshot.forEach(doc => {
+                        users.push({ id: doc.id, ...doc.data() });
                     });
-                }
-            } catch (error) {
-                console.error('Error initializing queue counter:', error);
+
+                    updateUsersUI();
+                });
+        }
+
+        // Update users UI
+        function updateUsersUI() {
+            const usersList = document.getElementById('usersList');
+            const noUsers = document.getElementById('noUsers');
+
+            if (users.length === 0) {
+                usersList.innerHTML = '';
+                noUsers.classList.remove('hidden');
+            } else {
+                noUsers.classList.add('hidden');
+                usersList.innerHTML = '';
+
+                users.forEach(user => {
+                    const userRow = document.createElement('tr');
+                    userRow.className = 'border-b hover:bg-gray-50';
+                    userRow.innerHTML = `
+                        <td class="px-4 py-2">${user.name}</td>
+                        <td class="px-4 py-2">${user.email}</td>
+                        <td class="px-4 py-2">
+                            <select onchange="updateUserRole('${user.id}', this.value)" class="role-badge role-${user.role} px-3 py-1 rounded border-0">
+                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                                <option value="staff" ${user.role === 'staff' ? 'selected' : ''}>Staff</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                            </select>
+                        </td>
+                        <td class="px-4 py-2">${user.totalOrders || 0}</td>
+                        <td class="px-4 py-2">${formatCurrency(user.totalSpent || 0)}</td>
+                        <td class="px-4 py-2">
+                            <button onclick="deleteUser('${user.id}')" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    usersList.appendChild(userRow);
+                });
             }
+        }
+
+        // Update user role
+        function updateUserRole(userId, newRole) {
+            if (!validateAdminAccess()) return;
+
+            showLoading();
+
+            db.collection('users').doc(userId).update({
+                role: newRole
+            }).then(() => {
+                hideLoading();
+                showSuccess('Role Diperbarui');
+                loadUsers(); // Refresh the list
+            }).catch(error => {
+                hideLoading();
+                showError('Error', 'Gagal update role: ' + error.message);
+            });
+        }
+
+        // Add new user
+        function addNewUser() {
+            if (!validateAdminAccess()) return;
+
+            const name = document.getElementById('newUserName').value;
+            const email = document.getElementById('newUserEmail').value;
+            const role = document.getElementById('newUserRole').value;
+
+            if (!name || !email) {
+                showWarning('Data Tidak Lengkap', 'Silakan isi semua field');
+                return;
+            }
+
+            showLoading();
+
+            // Create user in Firebase Auth
+            const tempPassword = Math.random().toString(36).slice(-8);
+
+            auth.createUserWithEmailAndPassword(email, tempPassword)
+                .then(userCredential => {
+                    // Save user data to Firestore
+                    return db.collection('users').doc(userCredential.user.uid).set({
+                        name: name,
+                        email: email,
+                        role: role,
+                        totalOrders: 0,
+                        totalSpent: 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                })
+                .then(() => {
+                    hideLoading();
+                    showSuccess('User Berhasil Ditambahkan', `Password sementara: ${tempPassword}`);
+
+                    // Clear form
+                    document.getElementById('newUserName').value = '';
+                    document.getElementById('newUserEmail').value = '';
+                    document.getElementById('newUserRole').value = 'user';
+
+                    // Refresh users list
+                    loadUsers();
+                })
+                .catch(error => {
+                    hideLoading();
+                    showError('Error', 'Gagal menambah user: ' + error.message);
+                });
+        }
+
+        // Delete user
+        function deleteUser(userId) {
+            if (!validateAdminAccess()) return;
+
+            Swal.fire({
+                title: 'Hapus User?',
+                text: 'User yang dihapus tidak dapat dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading();
+
+                    // Delete user from Firestore
+                    db.collection('users').doc(userId).delete()
+                        .then(() => {
+                            hideLoading();
+                            showSuccess('User Dihapus');
+                            loadUsers(); // Refresh the list
+                        })
+                        .catch(error => {
+                            hideLoading();
+                            showError('Error', 'Gagal menghapus user: ' + error.message);
+                        });
+                }
+            });
+        }
+
+        // Menu Management Functions
+
+        // Show menu management modal
+        function showMenuManagement() {
+            if (!validateAdminAccess()) return;
+
+            document.getElementById('menuManagementModal').classList.remove('hidden');
+            loadMenuItems();
+        }
+
+        // Hide menu management modal
+        function hideMenuManagement() {
+            document.getElementById('menuManagementModal').classList.add('hidden');
+        }
+
+        // Load menu items
+        function loadMenuItems() {
+            if (!validateAdminAccess()) return;
+
+            db.collection('menu').get()
+                .then(snapshot => {
+                    menuItems = [];
+                    snapshot.forEach(doc => {
+                        menuItems.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    updateMenuItemsUI();
+                });
+        }
+
+        // Update menu items UI
+        function updateMenuItemsUI() {
+            const menuList = document.getElementById('menuList');
+
+            if (menuItems.length === 0) {
+                menuList.innerHTML = '<p class="text-center text-gray-500 col-span-full">Belum ada menu</p>';
+            } else {
+                menuList.innerHTML = '';
+
+                menuItems.forEach(item => {
+                    const menuItem = document.createElement('div');
+                    menuItem.className = 'bg-white rounded-lg shadow-md overflow-hidden';
+                    menuItem.innerHTML = `
+                        <img src="${item.image || 'https://picsum.photos/seed/' + item.name + '/300/200.jpg'}" 
+                             alt="${item.name}" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-semibold text-lg">${item.name}</h4>
+                                <span class="text-sm text-gray-500">${item.category}</span>
+                            </div>
+                            <p class="text-xl font-bold text-purple-600 mb-3">${formatCurrency(item.price)}</p>
+                            <div class="flex space-x-2">
+                                <button onclick="editMenuItem('${item.id}')" class="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">
+                                    <i class="fas fa-edit mr-1"></i>Edit
+                                </button>
+                                <button onclick="deleteMenuItem('${item.id}')" class="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600 transition">
+                                    <i class="fas fa-trash mr-1"></i>Hapus
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    menuList.appendChild(menuItem);
+                });
+            }
+        }
+
+        // Add new menu item
+        function addNewMenu() {
+            if (!validateAdminAccess()) return;
+
+            const name = document.getElementById('newMenuName').value;
+            const price = parseInt(document.getElementById('newMenuPrice').value);
+            const category = document.getElementById('newMenuCategory').value;
+            const image = document.getElementById('newMenuImage').value;
+
+            if (!name || !price || !category) {
+                showWarning('Data Tidak Lengkap', 'Silakan isi semua field kecuali gambar');
+                return;
+            }
+
+            showLoading();
+
+            const menuItem = {
+                name: name,
+                price: price,
+                category: category,
+                image: image || `https://picsum.photos/seed/${name}/300/200.jpg`,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            db.collection('menu').add(menuItem)
+                .then(() => {
+                    hideLoading();
+                    showSuccess('Menu Berhasil Ditambahkan');
+
+                    // Clear form
+                    document.getElementById('newMenuName').value = '';
+                    document.getElementById('newMenuPrice').value = '';
+                    document.getElementById('newMenuCategory').value = 'makanan';
+                    document.getElementById('newMenuImage').value = '';
+
+                    // Refresh menu list
+                    loadMenuItems();
+                })
+                .catch(error => {
+                    hideLoading();
+                    showError('Error', 'Gagal menambah menu: ' + error.message);
+                });
+        }
+
+        // Edit menu item
+        function editMenuItem(itemId) {
+            if (!validateAdminAccess()) return;
+
+            const item = menuItems.find(m => m.id === itemId);
+            if (!item) return;
+
+            Swal.fire({
+                title: 'Edit Menu',
+                html: `
+                    <input type="text" id="editName" class="swal2-input" value="${item.name}" placeholder="Nama Menu">
+                    <input type="number" id="editPrice" class="swal2-input" value="${item.price}" placeholder="Harga">
+                    <select id="editCategory" class="swal2-input">
+                        <option value="makanan" ${item.category === 'makanan' ? 'selected' : ''}>Makanan</option>
+                        <option value="minuman" ${item.category === 'minuman' ? 'selected' : ''}>Minuman</option>
+                        <option value="snack" ${item.category === 'snack' ? 'selected' : ''}>Snack</option>
+                    </select>
+                    <input type="url" id="editImage" class="swal2-input" value="${item.image || ''}" placeholder="URL Gambar">
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Simpan',
+                cancelButtonText: 'Batal',
+                preConfirm: () => {
+                    const name = document.getElementById('editName').value;
+                    const price = parseInt(document.getElementById('editPrice').value);
+                    const category = document.getElementById('editCategory').value;
+                    const image = document.getElementById('editImage').value;
+
+                    if (!name || !price || !category) {
+                        Swal.showValidationMessage('Silakan isi semua field kecuali gambar');
+                        return false;
+                    }
+
+                    return { name, price, category, image };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading();
+
+                    const updates = {
+                        name: result.value.name,
+                        price: result.value.price,
+                        category: result.value.category,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    if (result.value.image) {
+                        updates.image = result.value.image;
+                    }
+
+                    db.collection('menu').doc(itemId).update(updates)
+                        .then(() => {
+                            hideLoading();
+                            showSuccess('Menu Berhasil Diperbarui');
+                            loadMenuItems();
+                        })
+                        .catch(error => {
+                            hideLoading();
+                            showError('Error', 'Gagal update menu: ' + error.message);
+                        });
+                }
+            });
+        }
+
+        // Delete menu item
+        function deleteMenuItem(itemId) {
+            if (!validateAdminAccess()) return;
+
+            const item = menuItems.find(m => m.id === itemId);
+            if (!item) return;
+
+            Swal.fire({
+                title: 'Hapus Menu?',
+                text: `Anda yakin ingin menghapus menu "${item.name}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading();
+
+                    db.collection('menu').doc(itemId).delete()
+                        .then(() => {
+                            hideLoading();
+                            showSuccess('Menu Dihapus');
+                            loadMenuItems();
+                        })
+                        .catch(error => {
+                            hideLoading();
+                            showError('Error', 'Gagal menghapus menu: ' + error.message);
+                        });
+                }
+            });
+        }
+
+        // Reports Functions
+
+        // Show reports modal
+        function showReports() {
+            if (!validateAdminAccess()) return;
+
+            document.getElementById('reportsModal').classList.remove('hidden');
+
+            // Set default date range (last 7 days)
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 7);
+
+            document.getElementById('reportEndDate').value = endDate.toISOString().split('T')[0];
+            document.getElementById('reportStartDate').value = startDate.toISOString().split('T')[0];
+        }
+
+        // Hide reports modal
+        function hideReports() {
+            document.getElementById('reportsModal').classList.add('hidden');
+        }
+
+        // Generate report
+        function generateReport() {
+            if (!validateAdminAccess()) return;
+
+            const startDate = new Date(document.getElementById('reportStartDate').value);
+            const endDate = new Date(document.getElementById('reportEndDate').value);
+            endDate.setHours(23, 59, 59, 999);
+
+            if (startDate > endDate) {
+                showWarning('Tanggal Tidak Valid', 'Tanggal mulai tidak boleh lebih besar dari tanggal selesai');
+                return;
+            }
+
+            showLoading();
+
+            // Get orders in date range
+            db.collection('orders')
+                .where('createdAt', '>=', startDate)
+                .where('createdAt', '<=', endDate)
+                .orderBy('createdAt', 'desc')
+                .get()
+                .then(snapshot => {
+                    const orders = [];
+                    let totalRevenue = 0;
+                    let totalOrders = 0;
+                    const categoryStats = {
+                        makanan: { count: 0, revenue: 0 },
+                        minuman: { count: 0, revenue: 0 },
+                        snack: { count: 0, revenue: 0 }
+                    };
+
+                    snapshot.forEach(doc => {
+                        const order = doc.data();
+                        orders.push({ id: doc.id, ...order });
+                        totalOrders++;
+                        totalRevenue += order.total;
+
+                        // Calculate category stats
+                        order.items.forEach(item => {
+                            if (categoryStats[item.category]) {
+                                categoryStats[item.category].count += item.quantity;
+                                categoryStats[item.category].revenue += item.price * item.quantity;
+                            }
+                        });
+                    });
+
+                    // Generate report HTML
+                    const reportHTML = `
+                        <div class="mb-6">
+                            <h4 class="text-lg font-semibold mb-4">Ringkasan Laporan</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-purple-100 p-4 rounded-lg">
+                                    <p class="text-sm text-purple-600">Total Pesanan</p>
+                                    <p class="text-2xl font-bold text-purple-800">${totalOrders}</p>
+                                </div>
+                                <div class="bg-green-100 p-4 rounded-lg">
+                                    <p class="text-sm text-green-600">Total Pendapatan</p>
+                                    <p class="text-2xl font-bold text-green-800">${formatCurrency(totalRevenue)}</p>
+                                </div>
+                                <div class="bg-blue-100 p-4 rounded-lg">
+                                    <p class="text-sm text-blue-600">Rata-rata per Pesanan</p>
+                                    <p class="text-2xl font-bold text-blue-800">${formatCurrency(totalOrders > 0 ? totalRevenue / totalOrders : 0)}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="text-lg font-semibold mb-4">Statistik per Kategori</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-red-100 p-4 rounded-lg">
+                                    <p class="text-sm text-red-600">Makanan</p>
+                                    <p class="text-lg font-bold text-red-800">${categoryStats.makanan.count} item</p>
+                                    <p class="text-sm text-red-600">${formatCurrency(categoryStats.makanan.revenue)}</p>
+                                </div>
+                                <div class="bg-yellow-100 p-4 rounded-lg">
+                                    <p class="text-sm text-yellow-600">Minuman</p>
+                                    <p class="text-lg font-bold text-yellow-800">${categoryStats.minuman.count} item</p>
+                                    <p class="text-sm text-yellow-600">${formatCurrency(categoryStats.minuman.revenue)}</p>
+                                </div>
+                                <div class="bg-green-100 p-4 rounded-lg">
+                                    <p class="text-sm text-green-600">Snack</p>
+                                    <p class="text-lg font-bold text-green-800">${categoryStats.snack.count} item</p>
+                                    <p class="text-sm text-green-600">${formatCurrency(categoryStats.snack.revenue)}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-lg font-semibold mb-4">Detail Pesanan</h4>
+                            <div class="overflow-x-auto">
+                                <table class="admin-table w-full">
+                                    <thead>
+                                        <tr>
+                                            <th>No. Antrian</th>
+                                            <th>Tanggal</th>
+                                            <th>Items</th>
+                                            <th>Total</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${orders.map(order => `
+                                            <tr>
+                                                <td>#${order.queueNumber}</td>
+                                                <td>${formatDate(order.createdAt.toDate())}</td>
+                                                <td>
+                                                    ${order.items.map(item => `${item.name} x${item.quantity}`).join('<br>')}
+                                                </td>
+                                                <td>${formatCurrency(order.total)}</td>
+                                                <td>
+                                                    <span class="status-badge status-${order.status}">
+                                                        ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('reportContent').innerHTML = reportHTML;
+                    hideLoading();
+                })
+                .catch(error => {
+                    hideLoading();
+                    showError('Error', 'Gagal generate laporan: ' + error.message);
+                });
         }
 
         // Barcode Scanner Functions
@@ -876,6 +1919,10 @@
                         <p><strong>Nomor Antrian:</strong> ${order.queueNumber}</p>
                         <p><strong>Status:</strong> ${order.status}</p>
                         <p><strong>Total:</strong> ${formatCurrency(order.total)}</p>
+                        <p><strong>Items:</strong></p>
+                        <ul class="text-left">
+                            ${order.items.map(item => `<li>${item.name} x${item.quantity}</li>`).join('')}
+                        </ul>
                     `,
                     icon: 'info',
                     confirmButtonText: 'OK'
@@ -884,6 +1931,55 @@
                 showWarning('Kode Tidak Ditemukan', 'Tidak ada pesanan dengan kode tersebut');
             }
         }
+
+        // Initialize auth state listener
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+
+            if (user) {
+                // Check if we're on admin page
+                if (window.location.pathname.includes('admin.html')) {
+                    // Load user data to get role
+                    db.collection('users').doc(user.uid).get()
+                        .then(doc => {
+                            if (doc.exists) {
+                                currentUserData = doc.data();
+                                currentUserRole = currentUserData.role;
+
+                                if (currentUserRole === 'admin' || currentUserRole === 'staff') {
+                                    showAdminDashboard();
+                                } else {
+                                    // Redirect to user app if not admin/staff
+                                    window.location.href = 'index.html';
+                                }
+                            } else {
+                                // User document doesn't exist, create it
+                                db.collection('users').doc(user.uid).set({
+                                    name: user.email.split('@')[0],
+                                    email: user.email,
+                                    role: 'user',
+                                    totalOrders: 0,
+                                    totalSpent: 0,
+                                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                                }).then(() => {
+                                    window.location.href = 'index.html';
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading user data:', error);
+                            window.location.href = 'index.html';
+                        });
+                } else {
+                    // Redirect to admin page if admin/staff
+                    if (user.email === 'admin@kantin.com') {
+                        window.location.href = 'admin.html';
+                    }
+                }
+            } else {
+                showAdminLogin();
+            }
+        });
 
         // Initialize admin app
         document.addEventListener('DOMContentLoaded', function () {
