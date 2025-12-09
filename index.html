@@ -1407,92 +1407,335 @@
             finalQueueNumber.textContent = queueNumber;
 
             if (method === 'qris') {
-                qrisCode.classList.remove('hidden');
-                cashCode.classList.add('hidden');
-            } else {
-                cashCode.classList.remove('hidden');
                 qrisCode.classList.add('hidden');
+                cashCode.classList.remove('hidden');
                 document.getElementById('queueNumber').textContent = queueNumber;
             }
 
-            hideLoading();
             modal.classList.remove('hidden');
         }
 
         function closePaymentSuccess() {
-            if (!validateUserAccess()) return;
             document.getElementById('paymentSuccessModal').classList.add('hidden');
         }
 
-        // Notifications functions
-        function showNotifications() {
-            if (!validateUserAccess()) return;
-            document.getElementById('notificationsModal').classList.remove('hidden');
-        }
+        // Notification Functions
 
-        function hideNotifications() {
-            document.getElementById('notificationsModal').classList.add('hidden');
-        }
-
+        // Listen for notifications
         function listenForNotifications() {
             if (!validateUserAccess()) return;
 
-            // Listen for new orders
-            db.collection('orders')
+            db.collection('notifications')
                 .where('userId', '==', currentUser.uid)
                 .orderBy('createdAt', 'desc')
                 .onSnapshot(snapshot => {
                     notifications = [];
                     snapshot.forEach(doc => {
-                        const order = { id: doc.id, ...doc.data() };
-                        notifications.push({
-                            id: doc.id,
-                            title: `Pesanan #${order.queueNumber}`,
-                            message: `Status: ${order.status}`,
-                            timestamp: order.createdAt
-                        });
+                        notifications.push({ id: doc.id, ...doc.data() });
                     });
 
-                    updateNotificationsUI();
+                    updateNotificationUI();
+                    checkForQueueNotifications();
                 });
         }
 
-        function updateNotificationsUI() {
+        // Update notification UI
+        function updateNotificationUI() {
+            if (!validateUserAccess()) return;
+
+            const notificationCount = document.getElementById('notificationCount');
             const notificationsList = document.getElementById('notificationsList');
             const noNotifications = document.getElementById('noNotifications');
-            const notificationCount = document.getElementById('notificationCount');
 
+            // Update notification count
+            const unreadCount = notifications.filter(n => !n.read).length;
+            if (unreadCount > 0) {
+                notificationCount.textContent = unreadCount;
+                notificationCount.classList.remove('hidden');
+            } else {
+                notificationCount.classList.add('hidden');
+            }
+
+            // Update notifications list
             if (notifications.length === 0) {
                 notificationsList.innerHTML = '';
                 noNotifications.classList.remove('hidden');
-                notificationCount.classList.add('hidden');
             } else {
                 noNotifications.classList.add('hidden');
-                notificationCount.classList.remove('hidden');
-                notificationCount.textContent = notifications.length;
-
                 notificationsList.innerHTML = '';
+
                 notifications.forEach(notification => {
-                    const notifElement = document.createElement('div');
-                    notifElement.className = 'p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500';
-                    notifElement.innerHTML = `
-                                <h4 class="font-semibold text-gray-800">${notification.title}</h4>
-                                <p class="text-sm text-gray-600">${notification.message}</p>
-                                <p class="text-xs text-gray-500 mt-2">${formatDate(notification.timestamp.toDate())}</p>
-                            `;
-                    notificationsList.appendChild(notifElement);
+                    const notificationItem = document.createElement('div');
+                    notificationItem.className = `p-4 rounded-lg ${notification.read ? 'bg-gray-50' : 'bg-blue-50'} border-l-4 ${notification.read ? 'border-gray-300' : 'border-blue-500'}`;
+                    notificationItem.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-semibold ${notification.read ? 'text-gray-700' : 'text-blue-700'}">${notification.title}</h4>
+                                    <p class="text-sm text-gray-600 mt-1">${notification.message}</p>
+                                    <p class="text-xs text-gray-500 mt-2">${formatDate(notification.createdAt.toDate())}</p>
+                                </div>
+                                ${!notification.read ? '<i class="fas fa-circle text-blue-500 text-xs"></i>' : ''}
+                            </div>
+                        `;
+                    notificationsList.appendChild(notificationItem);
+
+                    // Mark as read
+                    if (!notification.read) {
+                        db.collection('notifications').doc(notification.id).update({ read: true });
+                    }
                 });
             }
         }
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', () => {
-            // Load menu on startup
-            loadMenu();
+        // Check for queue notifications
+        function checkForQueueNotifications() {
+            if (!validateUserAccess()) return;
 
-            // Set up form handlers
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            const unreadNotifications = notifications.filter(n => !n.read && n.type === 'queue');
+
+            unreadNotifications.forEach(notification => {
+                if (notification.message.includes('siap diambil')) {
+                    // Show SweetAlert notification
+                    Swal.fire({
+                        title: 'Pesanan Siap Diambil!',
+                        text: notification.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            // Play notification sound
+                            playNotificationSound();
+
+                            // Speak the notification
+                            speakNotification(notification.message);
+                        }
+                    });
+                }
+            });
+        }
+
+        // Speak notification
+        function speakNotification(message) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.9;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Show notifications modal
+        function showNotifications() {
+            if (!validateUserAccess()) return;
+            document.getElementById('notificationsModal').classList.remove('hidden');
+        }
+
+        // Hide notifications modal
+        function hideNotifications() {
+            document.getElementById('notificationsModal').classList.add('hidden');
+        }
+
+        // Create notification
+        async function createNotification(userId, title, message, type = 'general') {
+            try {
+                await db.collection('notifications').add({
+                    userId: userId,
+                    title: title,
+                    message: message,
+                    type: type,
+                    read: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Error creating notification:', error);
+            }
+        }
+
+        // Send queue notification
+        async function sendQueueNotification(userId, queueNumber) {
+            const message = `Antrian nomor ${queueNumber}, silahkan ambil pesanan Anda`;
+            await createNotification(userId, 'Pesanan Siap Diambil!', message, 'queue');
+        }
+
+        // Role Management Functions
+
+        // Show role management modal
+        function showRoleManagement() {
+            if (!validateAdminAccess()) return;
+
+            document.getElementById('roleManagementModal').classList.remove('hidden');
+            loadUsers();
+        }
+
+        // Hide role management modal
+        function hideRoleManagement() {
+            document.getElementById('roleManagementModal').classList.add('hidden');
+        }
+
+        // Load users
+        function loadUsers() {
+            if (!validateAdminAccess()) return;
+
+            db.collection('users').get()
+                .then(snapshot => {
+                    users = [];
+                    snapshot.forEach(doc => {
+                        users.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    updateUsersUI();
+                });
+        }
+
+        // Update users UI
+        function updateUsersUI() {
+            const usersList = document.getElementById('usersList');
+            const noUsers = document.getElementById('noUsers');
+
+            if (users.length === 0) {
+                usersList.innerHTML = '';
+                noUsers.classList.remove('hidden');
+            } else {
+                noUsers.classList.add('hidden');
+                usersList.innerHTML = '';
+
+                users.forEach(user => {
+                    const userRow = document.createElement('tr');
+                    userRow.className = 'border-b hover:bg-gray-50';
+                    userRow.innerHTML = `
+                            <td class="px-4 py-2">${user.name}</td>
+                            <td class="px-4 py-2">${user.email}</td>
+                            <td class="px-4 py-2">
+                                <select onchange="updateUserRole('${user.id}', this.value)" class="role-badge role-${user.role} px-3 py-1 rounded border-0">
+                                    <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                                    <option value="staff" ${user.role === 'staff' ? 'selected' : ''}>Staff</option>
+                                    <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                </select>
+                            </td>
+                            <td class="px-4 py-2">${user.totalOrders || 0}</td>
+                            <td class="px-4 py-2">${formatCurrency(user.totalSpent || 0)}</td>
+                            <td class="px-4 py-2">
+                                <button onclick="deleteUser('${user.id}')" class="text-red-500 hover:text-red-700">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                    usersList.appendChild(userRow);
+                });
+            }
+        }
+
+        // Update user role
+        function updateUserRole(userId, newRole) {
+            if (!validateAdminAccess()) return;
+
+            showLoading();
+
+            db.collection('users').doc(userId).update({
+                role: newRole
+            }).then(() => {
+                hideLoading();
+                showSuccess('Role Diperbarui');
+                loadUsers(); // Refresh the list
+            }).catch(error => {
+                hideLoading();
+                showError('Error', 'Gagal update role: ' + error.message);
+            });
+        }
+
+        // Add new user
+        function addNewUser() {
+            if (!validateAdminAccess()) return;
+
+            const name = document.getElementById('newUserName').value;
+            const email = document.getElementById('newUserEmail').value;
+            const role = document.getElementById('newUserRole').value;
+
+            if (!name || !email) {
+                showWarning('Data Tidak Lengkap', 'Silakan isi semua field');
+                return;
+            }
+
+            showLoading();
+
+            // Create user in Firebase Auth
+            const tempPassword = Math.random().toString(36).slice(-8);
+
+            auth.createUserWithEmailAndPassword(email, tempPassword)
+                .then(userCredential => {
+                    // Save user data to Firestore
+                    return db.collection('users').doc(userCredential.user.uid).set({
+                        name: name,
+                        email: email,
+                        role: role,
+                        totalOrders: 0,
+                        totalSpent: 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                })
+                .then(() => {
+                    hideLoading();
+                    showSuccess('User Berhasil Ditambahkan', `Password sementara: ${tempPassword}`);
+
+                    // Clear form
+                    document.getElementById('newUserName').value = '';
+                    document.getElementById('newUserEmail').value = '';
+                    document.getElementById('newUserRole').value = 'user';
+
+                    // Refresh users list
+                    loadUsers();
+                })
+                .catch(error => {
+                    hideLoading();
+                    showError('Error', 'Gagal menambah user: ' + error.message);
+                });
+        }
+
+        // Delete user
+        function deleteUser(userId) {
+            if (!validateAdminAccess()) return;
+
+            Swal.fire({
+                title: 'Hapus User?',
+                text: 'User yang dihapus tidak dapat dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading();
+
+                    // Delete user from Firestore
+                    db.collection('users').doc(userId).delete()
+                        .then(() => {
+                            // Delete user from Firebase Auth
+                            // Note: This requires admin SDK or Firebase Functions
+                            // For now, we'll just remove from Firestore
+                            hideLoading();
+                            showSuccess('User Dihapus');
+                            loadUsers(); // Refresh the list
+                        })
+                        .catch(error => {
+                            hideLoading();
+                            showError('Error', 'Gagal menghapus user: ' + error.message);
+                        });
+                }
+            });
+        }
+
+        // Initialize menu on load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Only initialize if on user app
+            if (!window.location.pathname.includes('admin.html')) {
+                loadMenu();
+
+                // Setup event listeners
+                document.getElementById('loginForm').addEventListener('submit', handleLogin);
+                document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            }
         });
     </script>
 </body>
