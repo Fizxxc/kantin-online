@@ -1,63 +1,252 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Kantin Digital</title>
-    
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    
+
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    
+
     <!-- QuaggaJS for Barcode Scanner -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-    
+
     <!-- Security Meta Tags -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https://picsum.photos https://*.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://*.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com; media-src 'self' blob:;">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; img-src 'self' data: https://picsum.photos https://*.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://*.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com; media-src 'self' blob:;">
     <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .menu-card {
+            transition: all 0.3s ease;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .cart-item {
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .notification-badge {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .barcode {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+
+        /* Barcode Scanner Styles */
+        #scanner-container {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            height: 480px;
+            margin: 0 auto;
+            overflow: hidden;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        #scanner-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #scanner-container canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #scanner-container .drawingBuffer {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Real-time queue display */
+        .queue-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .queue-number {
+            font-size: 4rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .queue-status {
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+
+        /* Profile styles */
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e5e7eb;
+        }
+
+        /* Security styles */
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .no-copy {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            #menuGrid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </head>
+
 <body class="bg-gray-100">
     <!-- Admin Login Page -->
-    <div id="adminLoginPage" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-600">
+    <div id="adminLoginPage"
+        class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-600">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-96">
             <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">
                 <i class="fas fa-user-shield text-purple-500 mr-2"></i>Login Admin
             </h2>
-            
+
             <form id="adminLoginForm" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Email Admin</label>
-                    <input type="email" id="adminEmail" required 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <input type="email" id="adminEmail" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Password Admin</label>
-                    <input type="password" id="adminPassword" required 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <input type="password" id="adminPassword" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                 </div>
-                
-                <button type="submit" 
-                        class="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition duration-300 font-medium">
+
+                <button type="submit"
+                    class="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition duration-300 font-medium">
                     <i class="fas fa-sign-in-alt mr-2"></i>Masuk Admin
                 </button>
             </form>
         </div>
     </div>
-    
+
     <!-- Admin Dashboard -->
     <div id="adminDashboard" class="hidden">
         <header class="bg-purple-600 text-white shadow-md">
@@ -66,13 +255,14 @@
                     <h1 class="text-2xl font-bold">
                         <i class="fas fa-tachometer-alt mr-2"></i>Admin Dashboard
                     </h1>
-                    <button onclick="adminLogout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+                    <button onclick="adminLogout()"
+                        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
                         <i class="fas fa-sign-out-alt mr-2"></i>Keluar
                     </button>
                 </div>
             </div>
         </header>
-        
+
         <main class="container mx-auto px-4 py-8">
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -85,7 +275,7 @@
                         <i class="fas fa-shopping-cart text-3xl text-blue-500"></i>
                     </div>
                 </div>
-                
+
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -95,7 +285,7 @@
                         <i class="fas fa-money-bill-wave text-3xl text-green-500"></i>
                     </div>
                 </div>
-                
+
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -105,7 +295,7 @@
                         <i class="fas fa-list-ol text-3xl text-yellow-500"></i>
                     </div>
                 </div>
-                
+
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -116,44 +306,47 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Barcode Scanner Section -->
             <div class="bg-white rounded-lg shadow-md mb-8">
                 <div class="p-6 border-b">
                     <h2 class="text-xl font-bold">Scanner Barcode</h2>
                 </div>
-                
+
                 <div class="p-6">
                     <div class="text-center">
-                        <button onclick="startBarcodeScanner()" class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition mb-4">
+                        <button onclick="startBarcodeScanner()"
+                            class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition mb-4">
                             <i class="fas fa-qrcode mr-2"></i>Scan Barcode
                         </button>
-                        
+
                         <div id="barcodeScanner" class="hidden">
                             <div id="scanner-container" class="mx-auto" style="max-width: 640px;"></div>
-                            <button onclick="stopBarcodeScanner()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition mt-4">
+                            <button onclick="stopBarcodeScanner()"
+                                class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition mt-4">
                                 <i class="fas fa-stop mr-2"></i>Stop Scanner
                             </button>
                         </div>
-                        
+
                         <div id="scanResult" class="mt-4 hidden">
-                            <p class="text-lg">Hasil Scan: <span id="scannedCode" class="font-bold text-blue-600"></span></p>
+                            <p class="text-lg">Hasil Scan: <span id="scannedCode"
+                                    class="font-bold text-blue-600"></span></p>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Orders List -->
             <div class="bg-white rounded-lg shadow-md">
                 <div class="p-6 border-b">
                     <h2 class="text-xl font-bold">Daftar Pesanan</h2>
                 </div>
-                
+
                 <div class="p-6">
                     <div id="ordersList" class="space-y-4">
                         <!-- Orders will be dynamically loaded here -->
                     </div>
-                    
+
                     <div id="noOrders" class="text-center py-12">
                         <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
                         <p class="text-gray-500">Belum ada pesanan</p>
@@ -162,16 +355,545 @@
             </div>
         </main>
     </div>
-    
+
     <!-- Audio for notifications -->
     <audio id="notificationSound" preload="auto">
         <source src="assets/sounds/notification.mp3" type="audio/mpeg">
     </audio>
-    
-    <!-- JavaScript Files -->
-    <script src="js/config.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/admin.js"></script>
+
+    <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKF1eXOowCS35ylhonxvdy9QBiLYLmvzY",
+            authDomain: "crht-proj.firebaseapp.com",
+            databaseURL: "https://crht-proj-default-rtdb.firebaseio.com",
+            projectId: "crht-proj",
+            storageBucket: "crht-proj.firebasestorage.app",
+            messagingSenderId: "957104910274",
+            appId: "1:957104910274:web:5a7463a011d5f68583305b",
+            measurementId: "G-4BTK874XF4"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Global Variables
+        let currentUser = null;
+        let orders = [];
+        let scanner = null;
+
+        // Security: Prevent right-click and inspect
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+            }
+        });
+
+        // Utility Functions
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }).format(amount);
+        }
+
+        // Format date
+        function formatDate(date) {
+            return new Date(date).toLocaleString('id-ID', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Get today's date at midnight
+        function getTodayMidnight() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return today;
+        }
+
+        // Check if it's a new day
+        function isNewDay(lastDate) {
+            const today = getTodayMidnight();
+            const last = new Date(lastDate);
+            last.setHours(0, 0, 0, 0);
+            return today > last;
+        }
+
+        // Play notification sound
+        function playNotificationSound() {
+            const audio = document.getElementById('notificationSound');
+            audio.play().catch(e => console.log('Audio play failed:', e));
+        }
+
+        // Show loading
+        function showLoading() {
+            Swal.fire({
+                title: 'Loading...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
+
+        // Hide loading
+        function hideLoading() {
+            Swal.close();
+        }
+
+        // Show success message
+        function showSuccess(title, text = '') {
+            Swal.fire({
+                icon: 'success',
+                title: title,
+                text: text,
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        // Show error message
+        function showError(title, text = '') {
+            Swal.fire({
+                icon: 'error',
+                title: title,
+                text: text
+            });
+        }
+
+        // Show warning message
+        function showWarning(title, text = '') {
+            Swal.fire({
+                icon: 'warning',
+                title: title,
+                text: text
+            });
+        }
+
+        // Security: Validate admin access
+        function validateAdminAccess() {
+            if (currentUser && currentUser.email === 'admin@kantin.com') {
+                return true;
+            }
+            return false;
+        }
+
+        // Authentication Functions
+
+        // Handle admin login
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (email === 'admin@kantin.com' && password === 'admin123') {
+                showLoading();
+
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(() => {
+                        hideLoading();
+                        showSuccess('Login Admin Berhasil!');
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        showError('Login Gagal', error.message);
+                    });
+            } else {
+                showError('Login Gagal', 'Email atau password admin salah');
+            }
+        }
+
+        // Admin logout
+        function adminLogout() {
+            auth.signOut();
+        }
+
+        // Page navigation for admin app
+        function showAdminLogin() {
+            document.getElementById('adminLoginPage').classList.remove('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+        }
+
+        function showAdminDashboard() {
+            document.getElementById('adminLoginPage').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.remove('hidden');
+
+            // Load admin data
+            loadAdminData();
+
+            // Listen for orders
+            listenForOrders();
+
+            // Initialize queue counter
+            initializeQueueCounter();
+        }
+
+        // Initialize auth state listener
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+
+            // Check if we're on admin page
+            if (window.location.pathname.includes('admin.html')) {
+                if (user && user.email === 'admin@kantin.com') {
+                    showAdminDashboard();
+                } else {
+                    // Redirect to user app if not admin
+                    window.location.href = 'index.html';
+                }
+            }
+        });
+
+        // Admin Dashboard Functions
+
+        // Load admin data
+        function loadAdminData() {
+            if (!validateAdminAccess()) return;
+
+            // Load stats
+            loadAdminStats();
+
+            // Load orders
+            loadOrders();
+        }
+
+        // Load admin statistics
+        function loadAdminStats() {
+            if (!validateAdminAccess()) return;
+
+            const today = getTodayMidnight();
+
+            // Get today's orders
+            db.collection('orders')
+                .where('createdAt', '>=', today)
+                .get()
+                .then(snapshot => {
+                    let totalOrders = 0;
+                    let totalRevenue = 0;
+                    let activeQueue = 0;
+
+                    snapshot.forEach(doc => {
+                        const order = doc.data();
+                        totalOrders++;
+                        totalRevenue += order.total;
+                        if (order.status === 'pending' || order.status === 'processing') {
+                            activeQueue++;
+                        }
+                    });
+
+                    document.getElementById('totalOrders').textContent = totalOrders;
+                    document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
+                    document.getElementById('activeQueue').textContent = activeQueue;
+                });
+
+            // Get total users
+            db.collection('users').get()
+                .then(snapshot => {
+                    document.getElementById('totalUsers').textContent = snapshot.size;
+                });
+        }
+
+        // Listen for orders
+        function listenForOrders() {
+            if (!validateAdminAccess()) return;
+
+            db.collection('orders')
+                .orderBy('createdAt', 'desc')
+                .onSnapshot(snapshot => {
+                    orders = [];
+                    snapshot.forEach(doc => {
+                        orders.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    updateOrdersUI();
+                    loadAdminStats();
+                });
+        }
+
+        // Load orders
+        function loadOrders() {
+            if (!validateAdminAccess()) return;
+
+            db.collection('orders')
+                .orderBy('createdAt', 'desc')
+                .get()
+                .then(snapshot => {
+                    orders = [];
+                    snapshot.forEach(doc => {
+                        orders.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    updateOrdersUI();
+                });
+        }
+
+        // Update orders UI
+        function updateOrdersUI() {
+            if (!validateAdminAccess()) return;
+
+            const ordersList = document.getElementById('ordersList');
+            const noOrders = document.getElementById('noOrders');
+
+            if (orders.length === 0) {
+                ordersList.innerHTML = '';
+                noOrders.classList.remove('hidden');
+            } else {
+                noOrders.classList.add('hidden');
+                ordersList.innerHTML = '';
+
+                orders.forEach(order => {
+                    const orderItem = document.createElement('div');
+                    orderItem.className = 'border rounded-lg p-4 hover:shadow-md transition no-select';
+
+                    let statusColor = '';
+                    let statusText = '';
+
+                    switch (order.status) {
+                        case 'pending':
+                            statusColor = 'bg-yellow-100 text-yellow-800';
+                            statusText = 'Menunggu';
+                            break;
+                        case 'processing':
+                            statusColor = 'bg-blue-100 text-blue-800';
+                            statusText = 'Diproses';
+                            break;
+                        case 'ready':
+                            statusColor = 'bg-green-100 text-green-800';
+                            statusText = 'Siap Diambil';
+                            break;
+                        case 'completed':
+                            statusColor = 'bg-gray-100 text-gray-800';
+                            statusText = 'Selesai';
+                            break;
+                    }
+
+                    orderItem.innerHTML = `
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h4 class="font-semibold">Pesanan #${order.queueNumber}</h4>
+                                <p class="text-sm text-gray-600">${formatDate(order.createdAt.toDate())}</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium ${statusColor}">
+                                ${statusText}
+                            </span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <p class="text-sm text-gray-600 mb-1">Items:</p>
+                            <div class="space-y-1">
+                                ${order.items.map(item => `
+                                    <p class="text-sm">${item.name} x${item.quantity}</p>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <p class="font-bold text-lg">${formatCurrency(order.total)}</p>
+                            <div class="space-x-2">
+                                ${order.status === 'pending' ? `
+                                    <button onclick="updateOrderStatus('${order.id}', 'processing')" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">
+                                        Proses
+                                    </button>
+                                ` : ''}
+                                ${order.status === 'processing' ? `
+                                    <button onclick="updateOrderStatus('${order.id}', 'ready')" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition">
+                                        Siap
+                                    </button>
+                                    <button onclick="callOrder('${order.id}')" class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition">
+                                        <i class="fas fa-bell mr-1"></i>Panggil
+                                    </button>
+                                ` : ''}
+                                ${order.status === 'ready' ? `
+                                    <button onclick="updateOrderStatus('${order.id}', 'completed')" class="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600 transition">
+                                        Selesai
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                    ordersList.appendChild(orderItem);
+                });
+            }
+        }
+
+        // Update order status
+        function updateOrderStatus(orderId, newStatus) {
+            if (!validateAdminAccess()) return;
+
+            showLoading();
+
+            db.collection('orders').doc(orderId).update({
+                status: newStatus
+            }).then(() => {
+                hideLoading();
+                showSuccess('Status Diperbarui');
+            }).catch(error => {
+                hideLoading();
+                showError('Error', 'Gagal update status: ' + error.message);
+            });
+        }
+
+        // Call order
+        function callOrder(orderId) {
+            if (!validateAdminAccess()) return;
+
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                showLoading();
+
+                // Send notification to user
+                sendQueueNotification(order.userId, order.queueNumber)
+                    .then(() => {
+                        hideLoading();
+                        showSuccess('Notifikasi Terkirim', `Pesanan #${order.queueNumber} telah dipanggil`);
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        showError('Error', 'Gagal mengirim notifikasi: ' + error.message);
+                    });
+            }
+        }
+
+        // Create notification
+        async function createNotification(userId, title, message, type = 'general') {
+            try {
+                await db.collection('notifications').add({
+                    userId: userId,
+                    title: title,
+                    message: message,
+                    type: type,
+                    read: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Error creating notification:', error);
+            }
+        }
+
+        // Send queue notification
+        async function sendQueueNotification(userId, queueNumber) {
+            const message = `Antrian nomor ${queueNumber}, silahkan ambil pesanan Anda`;
+            await createNotification(userId, 'Pesanan Siap Diambil!', message, 'queue');
+        }
+
+        // Initialize queue counter
+        async function initializeQueueCounter() {
+            try {
+                const queueDoc = await db.collection('counters').doc('queue').get();
+
+                if (!queueDoc.exists) {
+                    await db.collection('counters').doc('queue').set({
+                        count: 0,
+                        lastReset: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing queue counter:', error);
+            }
+        }
+
+        // Barcode Scanner Functions
+        function startBarcodeScanner() {
+            if (!validateAdminAccess()) return;
+
+            const scannerContainer = document.getElementById('scanner-container');
+            const barcodeScanner = document.getElementById('barcodeScanner');
+
+            barcodeScanner.classList.remove('hidden');
+
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: scannerContainer,
+                    constraints: {
+                        width: 640,
+                        height: 480,
+                        facingMode: "environment"
+                    }
+                },
+                decoder: {
+                    readers: [
+                        "code_128_reader",
+                        "ean_reader",
+                        "ean_8_reader",
+                        "code_39_reader"
+                    ]
+                }
+            }, function (err) {
+                if (err) {
+                    console.error(err);
+                    showError('Scanner Error', 'Tidak dapat mengakses kamera');
+                    return;
+                }
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function (result) {
+                const code = result.codeResult.code;
+                document.getElementById('scannedCode').textContent = code;
+                document.getElementById('scanResult').classList.remove('hidden');
+
+                // Stop scanner after detection
+                stopBarcodeScanner();
+
+                // Process the scanned code
+                processScannedCode(code);
+            });
+
+            scanner = Quagga;
+        }
+
+        function stopBarcodeScanner() {
+            if (scanner) {
+                scanner.stop();
+                scanner = null;
+            }
+            document.getElementById('barcodeScanner').classList.add('hidden');
+        }
+
+        function processScannedCode(code) {
+            if (!validateAdminAccess()) return;
+
+            // Check if the code matches a queue number
+            const order = orders.find(o => o.queueNumber.toString() === code);
+
+            if (order) {
+                Swal.fire({
+                    title: 'Pesanan Ditemukan!',
+                    html: `
+                        <p><strong>Nomor Antrian:</strong> ${order.queueNumber}</p>
+                        <p><strong>Status:</strong> ${order.status}</p>
+                        <p><strong>Total:</strong> ${formatCurrency(order.total)}</p>
+                    `,
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                showWarning('Kode Tidak Ditemukan', 'Tidak ada pesanan dengan kode tersebut');
+            }
+        }
+
+        // Initialize admin app
+        document.addEventListener('DOMContentLoaded', function () {
+            // Only initialize if on admin app
+            if (window.location.pathname.includes('admin.html')) {
+                // Setup event listeners
+                document.getElementById('adminLoginForm').addEventListener('submit', handleAdminLogin);
+            }
+        });
+    </script>
 </body>
+
 </html>
