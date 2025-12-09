@@ -1,30 +1,28 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kantin Digital Sekolah</title>
-
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-
+    
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
+    
     <!-- Security Meta Tags -->
-    <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; img-src 'self' data: https://picsum.photos https://*.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://*.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; img-src 'self' data: https://picsum.photos https://*.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://*.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com;">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -38,7 +36,7 @@
 
         .menu-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .cart-item {
@@ -50,7 +48,6 @@
                 opacity: 0;
                 transform: translateX(-20px);
             }
-
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -65,11 +62,9 @@
             0% {
                 transform: scale(1);
             }
-
             50% {
                 transform: scale(1.1);
             }
-
             100% {
                 transform: scale(1);
             }
@@ -85,13 +80,8 @@
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .barcode {
@@ -113,7 +103,7 @@
         .queue-number {
             font-size: 4rem;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .queue-status {
@@ -146,17 +136,40 @@
             -webkit-touch-callout: none;
         }
 
+        /* Role Management Styles */
+        .role-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .role-admin {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .role-user {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .role-staff {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .container {
                 padding-left: 1rem;
                 padding-right: 1rem;
             }
-
+            
             #menuGrid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
-
+            
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -181,35 +194,33 @@
         }
     </style>
 </head>
-
 <body class="bg-gray-100">
     <!-- Login Page -->
-    <div id="loginPage"
-        class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+    <div id="loginPage" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-96">
             <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">
                 <i class="fas fa-utensils text-blue-500 mr-2"></i>Kantin Digital
             </h2>
-
+            
             <form id="loginForm" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" id="loginEmail" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="email" id="loginEmail" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
-
+                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" id="loginPassword" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="password" id="loginPassword" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
-
-                <button type="submit"
-                    class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300 font-medium">
+                
+                <button type="submit" 
+                        class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300 font-medium">
                     <i class="fas fa-sign-in-alt mr-2"></i>Masuk
                 </button>
             </form>
-
+            
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-600">Belum punya akun?</p>
                 <button onclick="showRegister()" class="text-blue-500 hover:text-blue-600 font-medium">
@@ -218,40 +229,39 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Register Page -->
-    <div id="registerPage"
-        class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
+    <div id="registerPage" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-96">
             <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">
                 <i class="fas fa-user-plus text-green-500 mr-2"></i>Daftar Akun
             </h2>
-
+            
             <form id="registerForm" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                    <input type="text" id="registerName" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <input type="text" id="registerName" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 </div>
-
+                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" id="registerEmail" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <input type="email" id="registerEmail" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 </div>
-
+                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" id="registerPassword" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <input type="password" id="registerPassword" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 </div>
-
-                <button type="submit"
-                    class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300 font-medium">
+                
+                <button type="submit" 
+                        class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300 font-medium">
                     <i class="fas fa-user-plus mr-2"></i>Daftar
                 </button>
             </form>
-
+            
             <div class="mt-6 text-center">
                 <button onclick="showLogin()" class="text-blue-500 hover:text-blue-600 font-medium">
                     Kembali ke Login
@@ -259,7 +269,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Main App -->
     <div id="mainApp" class="hidden">
         <!-- Header -->
@@ -270,67 +280,62 @@
                         <h1 id="welcomeMessage" class="text-2xl font-bold text-gray-800"></h1>
                         <p class="text-sm text-gray-600">Selamat datang di Kantin Digital</p>
                     </div>
-
+                    
                     <div class="flex items-center space-x-4">
-                        <button onclick="showProfile()"
-                            class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
+                        <!-- Role Management Button (Admin Only) -->
+                        <button id="roleManagementBtn" onclick="showRoleManagement()" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition hidden">
+                            <i class="fas fa-users-cog mr-2"></i>Kelola Role
+                        </button>
+                        
+                        <button onclick="showProfile()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
                             <i class="fas fa-user mr-2"></i>Profil
                         </button>
-
-                        <button onclick="showCart()"
-                            class="relative bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                        
+                        <button onclick="showCart()" class="relative bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
                             <i class="fas fa-shopping-cart mr-2"></i>Keranjang
-                            <span id="cartCount"
-                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs notification-badge">0</span>
+                            <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs notification-badge">0</span>
                         </button>
-
-                        <button onclick="showNotifications()"
-                            class="relative bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
+                        
+                        <button onclick="showNotifications()" class="relative bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
                             <i class="fas fa-bell mr-2"></i>Notifikasi
-                            <span id="notificationCount"
-                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs notification-badge hidden">0</span>
+                            <span id="notificationCount" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs notification-badge hidden">0</span>
                         </button>
-
-                        <button onclick="logout()"
-                            class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+                        
+                        <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
                             <i class="fas fa-sign-out-alt mr-2"></i>Keluar
                         </button>
                     </div>
                 </div>
             </div>
         </header>
-
+        
         <!-- Main Content -->
         <main class="container mx-auto px-4 py-8">
             <!-- Menu Categories -->
             <div class="mb-8">
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">Kategori Menu</h2>
                 <div class="flex space-x-4 overflow-x-auto pb-2">
-                    <button onclick="filterMenu('all')"
-                        class="category-btn bg-blue-500 text-white px-6 py-2 rounded-full whitespace-nowrap hover:bg-blue-600 transition">
+                    <button onclick="filterMenu('all')" class="category-btn bg-blue-500 text-white px-6 py-2 rounded-full whitespace-nowrap hover:bg-blue-600 transition">
                         Semua Menu
                     </button>
-                    <button onclick="filterMenu('makanan')"
-                        class="category-btn bg-gray-300 text-gray-700 px-6 py-2 rounded-full whitespace-nowrap hover:bg-gray-400 transition">
+                    <button onclick="filterMenu('makanan')" class="category-btn bg-gray-300 text-gray-700 px-6 py-2 rounded-full whitespace-nowrap hover:bg-gray-400 transition">
                         Makanan
                     </button>
-                    <button onclick="filterMenu('minuman')"
-                        class="category-btn bg-gray-300 text-gray-700 px-6 py-2 rounded-full whitespace-nowrap hover:bg-gray-400 transition">
+                    <button onclick="filterMenu('minuman')" class="category-btn bg-gray-300 text-gray-700 px-6 py-2 rounded-full whitespace-nowrap hover:bg-gray-400 transition">
                         Minuman
                     </button>
-                    <button onclick="filterMenu('snack')"
-                        class="category-btn bg-gray-300 text-gray-700 px-6 py-2 rounded-full whitespace-nowrap hover:bg-gray-400 transition">
+                    <button onclick="filterMenu('snack')" class="category-btn bg-gray-300 text-gray-700 px-6 py-2 rounded-full whitespace-nowrap hover:bg-gray-400 transition">
                         Snack
                     </button>
                 </div>
             </div>
-
+            
             <!-- Menu Grid -->
             <div id="menuGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <!-- Menu items will be dynamically loaded here -->
             </div>
         </main>
-
+        
         <!-- Profile Modal -->
         <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
@@ -343,17 +348,17 @@
                             </button>
                         </h3>
                     </div>
-
+                    
                     <div class="p-6">
                         <div class="text-center mb-6">
-                            <div
-                                class="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <div class="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 flex items-center justify-center">
                                 <i class="fas fa-user text-4xl text-gray-500"></i>
                             </div>
                             <h4 id="profileName" class="text-xl font-bold"></h4>
                             <p id="profileEmail" class="text-gray-600"></p>
+                            <span id="profileRole" class="role-badge role-user mt-2 inline-block">User</span>
                         </div>
-
+                        
                         <div class="space-y-3">
                             <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                 <span class="text-gray-600">Total Pesanan</span>
@@ -372,7 +377,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Cart Modal -->
         <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
@@ -385,33 +390,32 @@
                             </button>
                         </h3>
                     </div>
-
+                    
                     <div class="p-6 overflow-y-auto max-h-[50vh]">
                         <div id="cartItems" class="space-y-4">
                             <!-- Cart items will be dynamically loaded here -->
                         </div>
-
+                        
                         <div id="emptyCart" class="text-center py-12 hidden">
                             <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
                             <p class="text-gray-500">Keranjang masih kosong</p>
                         </div>
                     </div>
-
+                    
                     <div class="border-t p-6">
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-xl font-bold">Total:</span>
                             <span id="cartTotal" class="text-2xl font-bold text-blue-500">Rp 0</span>
                         </div>
-
-                        <button onclick="checkout()"
-                            class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition font-medium text-lg">
+                        
+                        <button onclick="checkout()" class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition font-medium text-lg">
                             <i class="fas fa-credit-card mr-2"></i>Checkout
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <!-- Checkout Modal -->
         <div id="checkoutModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
@@ -421,14 +425,13 @@
                             <i class="fas fa-credit-card mr-2"></i>Pembayaran
                         </h3>
                     </div>
-
+                    
                     <div class="p-6">
                         <div class="mb-6">
                             <p class="text-gray-600 mb-4">Pilih metode pembayaran:</p>
-
+                            
                             <div class="space-y-3">
-                                <label
-                                    class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition">
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition">
                                     <input type="radio" name="paymentMethod" value="qris" class="mr-3">
                                     <i class="fas fa-qrcode text-2xl text-blue-500 mr-3"></i>
                                     <div>
@@ -436,9 +439,8 @@
                                         <p class="text-sm text-gray-500">Scan QR Code untuk pembayaran</p>
                                     </div>
                                 </label>
-
-                                <label
-                                    class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition">
+                                
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition">
                                     <input type="radio" name="paymentMethod" value="cash" class="mr-3">
                                     <i class="fas fa-money-bill-wave text-2xl text-green-500 mr-3"></i>
                                     <div>
@@ -448,14 +450,12 @@
                                 </label>
                             </div>
                         </div>
-
+                        
                         <div class="flex space-x-3">
-                            <button onclick="hideCheckout()"
-                                class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-medium">
+                            <button onclick="hideCheckout()" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-medium">
                                 Batal
                             </button>
-                            <button onclick="processPayment()"
-                                class="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition font-medium">
+                            <button onclick="processPayment()" class="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition font-medium">
                                 Proses Pembayaran
                             </button>
                         </div>
@@ -463,39 +463,37 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Payment Success Modal -->
         <div id="paymentSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full text-center p-8">
                     <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
                     <h3 class="text-2xl font-bold mb-4">Pembayaran Berhasil!</h3>
-
+                    
                     <div id="qrisCode" class="hidden mb-6">
                         <p class="text-gray-600 mb-2">Silakan scan QR Code berikut:</p>
                         <div class="bg-gray-100 p-4 rounded-lg">
                             <div class="barcode text-center">||| ||||| ||| ||||| |||</div>
                         </div>
                     </div>
-
+                    
                     <div id="cashCode" class="hidden mb-6">
                         <p class="text-gray-600 mb-2">Tunjukkan kode ini ke kasir:</p>
                         <div class="bg-blue-100 p-4 rounded-lg">
                             <p class="text-3xl font-bold text-blue-600" id="queueNumber"></p>
                         </div>
                     </div>
-
-                    <p class="text-gray-600 mb-6">Nomor antrian Anda: <span id="finalQueueNumber"
-                            class="font-bold text-blue-600"></span></p>
-
-                    <button onclick="closePaymentSuccess()"
-                        class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition font-medium">
+                    
+                    <p class="text-gray-600 mb-6">Nomor antrian Anda: <span id="finalQueueNumber" class="font-bold text-blue-600"></span></p>
+                    
+                    <button onclick="closePaymentSuccess()" class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition font-medium">
                         OK
                     </button>
                 </div>
             </div>
         </div>
-
+        
         <!-- Notifications Modal -->
         <div id="notificationsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
@@ -508,12 +506,12 @@
                             </button>
                         </h3>
                     </div>
-
+                    
                     <div class="p-6 overflow-y-auto max-h-[60vh]">
                         <div id="notificationsList" class="space-y-3">
                             <!-- Notifications will be dynamically loaded here -->
                         </div>
-
+                        
                         <div id="noNotifications" class="text-center py-12">
                             <i class="fas fa-bell-slash text-6xl text-gray-300 mb-4"></i>
                             <p class="text-gray-500">Belum ada notifikasi</p>
@@ -522,26 +520,85 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Role Management Modal -->
+        <div id="roleManagementModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[80vh] overflow-hidden">
+                    <div class="bg-purple-600 text-white p-6">
+                        <h3 class="text-2xl font-bold flex items-center justify-between">
+                            <span><i class="fas fa-users-cog mr-2"></i>Kelola Role User</span>
+                            <button onclick="hideRoleManagement()" class="text-white hover:text-gray-200">
+                                <i class="fas fa-times text-2xl"></i>
+                            </button>
+                        </h3>
+                    </div>
+                    
+                    <div class="p-6">
+                        <!-- Add User Section -->
+                        <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                            <h4 class="text-lg font-semibold mb-4">Tambah User Baru</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <input type="text" id="newUserName" placeholder="Nama Lengkap" 
+                                       class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <input type="email" id="newUserEmail" placeholder="Email" 
+                                       class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <select id="newUserRole" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="user">User</option>
+                                    <option value="staff">Staff</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <button onclick="addNewUser()" class="mt-4 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+                                <i class="fas fa-plus mr-2"></i>Tambah User
+                            </button>
+                        </div>
+                        
+                        <!-- Users List -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full table-auto">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="px-4 py-2 text-left">Nama</th>
+                                        <th class="px-4 py-2 text-left">Email</th>
+                                        <th class="px-4 py-2 text-left">Role</th>
+                                        <th class="px-4 py-2 text-left">Total Pesanan</th>
+                                        <th class="px-4 py-2 text-left">Total Pengeluaran</th>
+                                        <th class="px-4 py-2 text-left">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersList">
+                                    <!-- Users will be dynamically loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div id="noUsers" class="text-center py-12 hidden">
+                            <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500">Belum ada user</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
+    
     <!-- Audio for notifications -->
     <audio id="notificationSound" preload="auto">
         <source src="assets/sounds/notification.mp3" type="audio/mpeg">
     </audio>
-
-    <!-- JavaScript Files -->
+    
     <script>
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyAKF1eXOowCS35ylhonxvdy9QBiLYLmvzY",
-            authDomain: "crht-proj.firebaseapp.com",
-            databaseURL: "https://crht-proj-default-rtdb.firebaseio.com",
-            projectId: "crht-proj",
-            storageBucket: "crht-proj.firebasestorage.app",
-            messagingSenderId: "957104910274",
-            appId: "1:957104910274:web:5a7463a011d5f68583305b",
-            measurementId: "G-4BTK874XF4"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
+
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -563,9 +620,11 @@
 
         // Global Variables
         let currentUser = null;
+        let currentUserRole = null;
         let cart = [];
         let notifications = [];
         let orders = [];
+        let users = [];
         let currentCategory = 'all';
         let currentQueueNumber = 1;
         let scanner = null;
@@ -573,9 +632,9 @@
         // Security: Prevent right-click and inspect
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
-            if (e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                (e.ctrlKey && e.shiftKey && e.key === 'J') || 
                 (e.ctrlKey && e.key === 'U')) {
                 e.preventDefault();
             }
@@ -682,11 +741,11 @@
             try {
                 // Get queue counter from Firestore
                 const queueDoc = await db.collection('counters').doc('queue').get();
-
+                
                 if (queueDoc.exists) {
                     const data = queueDoc.data();
                     const lastReset = data.lastReset.toDate();
-
+                    
                     // Check if it's a new day
                     if (isNewDay(lastReset)) {
                         // Reset counter
@@ -721,7 +780,7 @@
         async function initializeQueueCounter() {
             try {
                 const queueDoc = await db.collection('counters').doc('queue').get();
-
+                
                 if (!queueDoc.exists) {
                     await db.collection('counters').doc('queue').set({
                         count: 0,
@@ -735,18 +794,17 @@
 
         // Security: Validate admin access
         function validateAdminAccess() {
-            if (currentUser && currentUser.email === 'admin@kantin.com') {
-                return true;
-            }
-            return false;
+            return currentUserRole === 'admin';
+        }
+
+        // Security: Validate staff access
+        function validateStaffAccess() {
+            return currentUserRole === 'staff' || currentUserRole === 'admin';
         }
 
         // Security: Validate user access
         function validateUserAccess() {
-            if (currentUser && currentUser.email !== 'admin@kantin.com') {
-                return true;
-            }
-            return false;
+            return currentUserRole === 'user' || currentUserRole === 'staff' || currentUserRole === 'admin';
         }
 
         // Authentication Functions
@@ -756,15 +814,9 @@
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-
-            // Security: Prevent admin login on user app
-            if (email === 'admin@kantin.com') {
-                showError('Akses Ditolak', 'Gunakan halaman admin untuk login');
-                return;
-            }
-
+            
             showLoading();
-
+            
             auth.signInWithEmailAndPassword(email, password)
                 .then(() => {
                     hideLoading();
@@ -782,21 +834,16 @@
             const name = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
-
-            // Security: Prevent admin registration
-            if (email === 'admin@kantin.com') {
-                showError('Registrasi Gagal', 'Email ini tidak dapat digunakan');
-                return;
-            }
-
+            
             showLoading();
-
+            
             auth.createUserWithEmailAndPassword(email, password)
                 .then(userCredential => {
                     // Save user data to Firestore
                     return db.collection('users').doc(userCredential.user.uid).set({
                         name: name,
                         email: email,
+                        role: 'user', // Default role
                         totalOrders: 0,
                         totalSpent: 0,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -836,16 +883,23 @@
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('registerPage').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
-
+            
             // Set welcome message
             document.getElementById('welcomeMessage').textContent = getGreeting();
-
+            
             // Load user data
             loadUserData();
-
+            
+            // Show/hide role management button based on role
+            if (validateAdminAccess()) {
+                document.getElementById('roleManagementBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('roleManagementBtn').classList.add('hidden');
+            }
+            
             // Listen for notifications
             listenForNotifications();
-
+            
             // Initialize queue counter
             initializeQueueCounter();
         }
@@ -853,16 +907,23 @@
         // Load user data
         function loadUserData() {
             if (!validateUserAccess()) return;
-
+            
             db.collection('users').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
                         const userData = doc.data();
+                        currentUserRole = userData.role || 'user';
+                        
                         document.getElementById('profileName').textContent = userData.name;
                         document.getElementById('profileEmail').textContent = userData.email;
                         document.getElementById('profileTotalOrders').textContent = userData.totalOrders || 0;
                         document.getElementById('profileTotalSpent').textContent = formatCurrency(userData.totalSpent || 0);
                         document.getElementById('profileMemberSince').textContent = formatDate(userData.createdAt.toDate());
+                        
+                        // Update role badge
+                        const roleBadge = document.getElementById('profileRole');
+                        roleBadge.textContent = currentUserRole.charAt(0).toUpperCase() + currentUserRole.slice(1);
+                        roleBadge.className = `role-badge role-${currentUserRole} mt-2 inline-block`;
                     }
                 });
         }
@@ -870,43 +931,207 @@
         // Initialize auth state listener
         auth.onAuthStateChanged(user => {
             currentUser = user;
-
-            // Check if we're on admin page
-            if (window.location.pathname.includes('admin.html')) {
-                if (user && user.email === 'admin@kantin.com') {
-                    // Admin functionality would be here
-                } else {
-                    // Redirect to user app if not admin
-                    window.location.href = 'index.html';
-                }
-            } else {
-                // On user app
-                if (user) {
+            
+            if (user) {
+                // Check if we're on admin page
+                if (window.location.pathname.includes('admin.html')) {
                     if (user.email === 'admin@kantin.com') {
-                        // Redirect admin to admin dashboard
-                        window.location.href = 'admin.html';
+                        // Admin functionality would be here
                     } else {
-                        showMainApp();
+                        // Redirect to user app if not admin
+                        window.location.href = 'index.html';
                     }
                 } else {
-                    showLogin();
+                    // On user app
+                    showMainApp();
                 }
+            } else {
+                showLogin();
             }
         });
+
+        // Role Management Functions
+
+        // Show role management modal
+        function showRoleManagement() {
+            if (!validateAdminAccess()) return;
+            
+            document.getElementById('roleManagementModal').classList.remove('hidden');
+            loadUsers();
+        }
+
+        // Hide role management modal
+        function hideRoleManagement() {
+            document.getElementById('roleManagementModal').classList.add('hidden');
+        }
+
+        // Load users
+        function loadUsers() {
+            if (!validateAdminAccess()) return;
+            
+            db.collection('users').get()
+                .then(snapshot => {
+                    users = [];
+                    snapshot.forEach(doc => {
+                        users.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    updateUsersUI();
+                });
+        }
+
+        // Update users UI
+        function updateUsersUI() {
+            const usersList = document.getElementById('usersList');
+            const noUsers = document.getElementById('noUsers');
+            
+            if (users.length === 0) {
+                usersList.innerHTML = '';
+                noUsers.classList.remove('hidden');
+            } else {
+                noUsers.classList.add('hidden');
+                usersList.innerHTML = '';
+                
+                users.forEach(user => {
+                    const userRow = document.createElement('tr');
+                    userRow.className = 'border-b hover:bg-gray-50';
+                    userRow.innerHTML = `
+                        <td class="px-4 py-2">${user.name}</td>
+                        <td class="px-4 py-2">${user.email}</td>
+                        <td class="px-4 py-2">
+                            <select onchange="updateUserRole('${user.id}', this.value)" class="role-badge role-${user.role} px-3 py-1 rounded border-0">
+                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                                <option value="staff" ${user.role === 'staff' ? 'selected' : ''}>Staff</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                            </select>
+                        </td>
+                        <td class="px-4 py-2">${user.totalOrders || 0}</td>
+                        <td class="px-4 py-2">${formatCurrency(user.totalSpent || 0)}</td>
+                        <td class="px-4 py-2">
+                            <button onclick="deleteUser('${user.id}')" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    usersList.appendChild(userRow);
+                });
+            }
+        }
+
+        // Update user role
+        function updateUserRole(userId, newRole) {
+            if (!validateAdminAccess()) return;
+            
+            showLoading();
+            
+            db.collection('users').doc(userId).update({
+                role: newRole
+            }).then(() => {
+                hideLoading();
+                showSuccess('Role Diperbarui');
+                loadUsers(); // Refresh the list
+            }).catch(error => {
+                hideLoading();
+                showError('Error', 'Gagal update role: ' + error.message);
+            });
+        }
+
+        // Add new user
+        function addNewUser() {
+            if (!validateAdminAccess()) return;
+            
+            const name = document.getElementById('newUserName').value;
+            const email = document.getElementById('newUserEmail').value;
+            const role = document.getElementById('newUserRole').value;
+            
+            if (!name || !email) {
+                showWarning('Data Tidak Lengkap', 'Silakan isi semua field');
+                return;
+            }
+            
+            showLoading();
+            
+            // Create user in Firebase Auth
+            const tempPassword = Math.random().toString(36).slice(-8);
+            
+            auth.createUserWithEmailAndPassword(email, tempPassword)
+                .then(userCredential => {
+                    // Save user data to Firestore
+                    return db.collection('users').doc(userCredential.user.uid).set({
+                        name: name,
+                        email: email,
+                        role: role,
+                        totalOrders: 0,
+                        totalSpent: 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                })
+                .then(() => {
+                    hideLoading();
+                    showSuccess('User Berhasil Ditambahkan', `Password sementara: ${tempPassword}`);
+                    
+                    // Clear form
+                    document.getElementById('newUserName').value = '';
+                    document.getElementById('newUserEmail').value = '';
+                    document.getElementById('newUserRole').value = 'user';
+                    
+                    // Refresh users list
+                    loadUsers();
+                })
+                .catch(error => {
+                    hideLoading();
+                    showError('Error', 'Gagal menambah user: ' + error.message);
+                });
+        }
+
+        // Delete user
+        function deleteUser(userId) {
+            if (!validateAdminAccess()) return;
+            
+            Swal.fire({
+                title: 'Hapus User?',
+                text: 'User yang dihapus tidak dapat dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading();
+                    
+                    // Delete user from Firestore
+                    db.collection('users').doc(userId).delete()
+                        .then(() => {
+                            // Delete user from Firebase Auth
+                            // Note: This requires admin SDK or Firebase Functions
+                            // For now, we'll just remove from Firestore
+                            hideLoading();
+                            showSuccess('User Dihapus');
+                            loadUsers(); // Refresh the list
+                        })
+                        .catch(error => {
+                            hideLoading();
+                            showError('Error', 'Gagal menghapus user: ' + error.message);
+                        });
+                }
+            });
+        }
 
         // Main Application Functions (User App)
 
         // Load menu
         function loadMenu() {
             if (!validateUserAccess()) return;
-
+            
             const menuGrid = document.getElementById('menuGrid');
             menuGrid.innerHTML = '';
-
-            const filteredItems = currentCategory === 'all'
-                ? menuItems
+            
+            const filteredItems = currentCategory === 'all' 
+                ? menuItems 
                 : menuItems.filter(item => item.category === currentCategory);
-
+            
             filteredItems.forEach(item => {
                 const menuCard = document.createElement('div');
                 menuCard.className = 'menu-card bg-white rounded-lg shadow-md overflow-hidden cursor-pointer no-select';
@@ -927,49 +1152,49 @@
         // Filter menu
         function filterMenu(category) {
             if (!validateUserAccess()) return;
-
+            
             currentCategory = category;
-
+            
             // Update button styles
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.classList.remove('bg-blue-500', 'text-white');
                 btn.classList.add('bg-gray-300', 'text-gray-700');
             });
-
+            
             event.target.classList.remove('bg-gray-300', 'text-gray-700');
             event.target.classList.add('bg-blue-500', 'text-white');
-
+            
             loadMenu();
         }
 
         // Cart functions
         function addToCart(itemId) {
             if (!validateUserAccess()) return;
-
+            
             const item = menuItems.find(m => m.id === itemId);
             const existingItem = cart.find(c => c.id === itemId);
-
+            
             if (existingItem) {
                 existingItem.quantity++;
             } else {
                 cart.push({ ...item, quantity: 1 });
             }
-
+            
             updateCartUI();
-
+            
             showSuccess('Ditambahkan!', `${item.name} telah ditambahkan ke keranjang`);
         }
 
         function removeFromCart(itemId) {
             if (!validateUserAccess()) return;
-
+            
             cart = cart.filter(item => item.id !== itemId);
             updateCartUI();
         }
 
         function updateQuantity(itemId, change) {
             if (!validateUserAccess()) return;
-
+            
             const item = cart.find(c => c.id === itemId);
             if (item) {
                 item.quantity += change;
@@ -983,16 +1208,16 @@
 
         function updateCartUI() {
             if (!validateUserAccess()) return;
-
+            
             const cartCount = document.getElementById('cartCount');
             const cartItems = document.getElementById('cartItems');
             const cartTotal = document.getElementById('cartTotal');
             const emptyCart = document.getElementById('emptyCart');
-
+            
             // Update cart count
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCount.textContent = totalItems;
-
+            
             // Update cart items
             if (cart.length === 0) {
                 cartItems.innerHTML = '';
@@ -1001,11 +1226,11 @@
             } else {
                 emptyCart.classList.add('hidden');
                 cartItems.innerHTML = '';
-
+                
                 let total = 0;
                 cart.forEach(item => {
                     total += item.price * item.quantity;
-
+                    
                     const cartItem = document.createElement('div');
                     cartItem.className = 'cart-item flex items-center justify-between p-4 bg-gray-50 rounded-lg';
                     cartItem.innerHTML = `
@@ -1032,7 +1257,7 @@
                     `;
                     cartItems.appendChild(cartItem);
                 });
-
+                
                 cartTotal.textContent = formatCurrency(total);
             }
         }
@@ -1059,12 +1284,12 @@
         // Checkout functions
         function checkout() {
             if (!validateUserAccess()) return;
-
+            
             if (cart.length === 0) {
                 showWarning('Keranjang Kosong', 'Silakan tambahkan item ke keranjang terlebih dahulu');
                 return;
             }
-
+            
             hideCart();
             document.getElementById('checkoutModal').classList.remove('hidden');
         }
@@ -1075,23 +1300,23 @@
 
         async function processPayment() {
             if (!validateUserAccess()) return;
-
+            
             const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
-
+            
             if (!paymentMethod) {
                 showWarning('Pilih Metode Pembayaran', 'Silakan pilih metode pembayaran terlebih dahulu');
                 return;
             }
-
+            
             showLoading();
-
+            
             try {
                 // Generate queue number
                 const queueNumber = await generateQueueNumber();
-
+                
                 // Calculate total
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
+                
                 // Create order
                 const order = {
                     userId: currentUser.uid,
@@ -1102,14 +1327,14 @@
                     status: 'pending',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
-
+                
                 // Save order to Firestore
                 const docRef = await db.collection('orders').add(order);
-
+                
                 // Update user statistics
                 const userRef = db.collection('users').doc(currentUser.uid);
                 const userDoc = await userRef.get();
-
+                
                 if (userDoc.exists) {
                     const userData = userDoc.data();
                     await userRef.update({
@@ -1117,200 +1342,122 @@
                         totalSpent: (userData.totalSpent || 0) + total
                     });
                 }
-
+                
                 // Clear cart
                 cart = [];
                 updateCartUI();
-
+                
                 // Show success modal
                 hideCheckout();
                 showPaymentSuccess(paymentMethod.value, queueNumber);
-
+                
                 // Play notification sound
                 playNotificationSound();
-
+                
             } catch (error) {
                 hideLoading();
                 showError('Error', 'Gagal memproses pesanan: ' + error.message);
             }
         }
 
-        function showPaymentSuccess(method, queueNumber) {
-            if (!validateUserAccess()) return;
-
-            const modal = document.getElementById('paymentSuccessModal');
-            const qrisCode = document.getElementById('qrisCode');
-            const cashCode = document.getElementById('cashCode');
-            const finalQueueNumber = document.getElementById('finalQueueNumber');
-
-            finalQueueNumber.textContent = queueNumber;
-
-            if (method === 'qris') {
-                qrisCode.classList.remove('hidden');
-                cashCode.classList.add('hidden');
-            } else {
-                qrisCode.classList.add('hidden');
-                cashCode.classList.remove('hidden');
-                document.getElementById('queueNumber').textContent = queueNumber;
-            }
-
-            modal.classList.remove('hidden');
-        }
-
-        function closePaymentSuccess() {
-            document.getElementById('paymentSuccessModal').classList.add('hidden');
-        }
-
-        // Notification Functions
-
-        // Listen for notifications
-        function listenForNotifications() {
-            if (!validateUserAccess()) return;
-
-            db.collection('notifications')
-                .where('userId', '==', currentUser.uid)
-                .orderBy('createdAt', 'desc')
-                .onSnapshot(snapshot => {
-                    notifications = [];
-                    snapshot.forEach(doc => {
-                        notifications.push({ id: doc.id, ...doc.data() });
-                    });
-
-                    updateNotificationUI();
-                    checkForQueueNotifications();
-                });
-        }
-
-        // Update notification UI
-        function updateNotificationUI() {
-            if (!validateUserAccess()) return;
-
-            const notificationCount = document.getElementById('notificationCount');
-            const notificationsList = document.getElementById('notificationsList');
-            const noNotifications = document.getElementById('noNotifications');
-
-            // Update notification count
-            const unreadCount = notifications.filter(n => !n.read).length;
-            if (unreadCount > 0) {
-                notificationCount.textContent = unreadCount;
-                notificationCount.classList.remove('hidden');
-            } else {
-                notificationCount.classList.add('hidden');
-            }
-
-            // Update notifications list
-            if (notifications.length === 0) {
-                notificationsList.innerHTML = '';
-                noNotifications.classList.remove('hidden');
-            } else {
-                noNotifications.classList.add('hidden');
-                notificationsList.innerHTML = '';
-
-                notifications.forEach(notification => {
-                    const notificationItem = document.createElement('div');
-                    notificationItem.className = `p-4 rounded-lg ${notification.read ? 'bg-gray-50' : 'bg-blue-50'} border-l-4 ${notification.read ? 'border-gray-300' : 'border-blue-500'}`;
-                    notificationItem.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-semibold ${notification.read ? 'text-gray-700' : 'text-blue-700'}">${notification.title}</h4>
-                                <p class="text-sm text-gray-600 mt-1">${notification.message}</p>
-                                <p class="text-xs text-gray-500 mt-2">${formatDate(notification.createdAt.toDate())}</p>
-                            </div>
-                            ${!notification.read ? '<i class="fas fa-circle text-blue-500 text-xs"></i>' : ''}
-                        </div>
-                    `;
-                    notificationsList.appendChild(notificationItem);
-
-                    // Mark as read
-                    if (!notification.read) {
-                        db.collection('notifications').doc(notification.id).update({ read: true });
+                function showPaymentSuccess(method, queueNumber) {
+                    if (!validateUserAccess()) return;
+                    
+                    const modal = document.getElementById('paymentSuccessModal');
+                    const qrisCode = document.getElementById('qrisCode');
+                    const cashCode = document.getElementById('cashCode');
+                    const finalQueueNumber = document.getElementById('finalQueueNumber');
+                    
+                    finalQueueNumber.textContent = queueNumber;
+                    
+                    if (method === 'qris') {
+                        qrisCode.classList.remove('hidden');
+                        cashCode.classList.add('hidden');
+                    } else {
+                        cashCode.classList.remove('hidden');
+                        qrisCode.classList.add('hidden');
+                        document.getElementById('queueNumber').textContent = queueNumber;
                     }
-                });
-            }
-        }
-
-        // Check for queue notifications
-        function checkForQueueNotifications() {
-            if (!validateUserAccess()) return;
-
-            const unreadNotifications = notifications.filter(n => !n.read && n.type === 'queue');
-
-            unreadNotifications.forEach(notification => {
-                if (notification.message.includes('siap diambil')) {
-                    // Show SweetAlert notification
-                    Swal.fire({
-                        title: 'Pesanan Siap Diambil!',
-                        text: notification.message,
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            // Play notification sound
-                            playNotificationSound();
-
-                            // Speak the notification
-                            speakNotification(notification.message);
-                        }
-                    });
+                    
+                    hideLoading();
+                    modal.classList.remove('hidden');
                 }
-            });
-        }
-
-        // Speak notification
-        function speakNotification(message) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(message);
-                utterance.lang = 'id-ID';
-                utterance.rate = 0.9;
-                speechSynthesis.speak(utterance);
-            }
-        }
-
-        // Show notifications modal
-        function showNotifications() {
-            if (!validateUserAccess()) return;
-            document.getElementById('notificationsModal').classList.remove('hidden');
-        }
-
-        // Hide notifications modal
-        function hideNotifications() {
-            document.getElementById('notificationsModal').classList.add('hidden');
-        }
-
-        // Create notification
-        async function createNotification(userId, title, message, type = 'general') {
-            try {
-                await db.collection('notifications').add({
-                    userId: userId,
-                    title: title,
-                    message: message,
-                    type: type,
-                    read: false,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        
+                function closePaymentSuccess() {
+                    if (!validateUserAccess()) return;
+                    document.getElementById('paymentSuccessModal').classList.add('hidden');
+                }
+        
+                // Notifications functions
+                function showNotifications() {
+                    if (!validateUserAccess()) return;
+                    document.getElementById('notificationsModal').classList.remove('hidden');
+                }
+        
+                function hideNotifications() {
+                    document.getElementById('notificationsModal').classList.add('hidden');
+                }
+        
+                function listenForNotifications() {
+                    if (!validateUserAccess()) return;
+                    
+                    // Listen for new orders
+                    db.collection('orders')
+                        .where('userId', '==', currentUser.uid)
+                        .orderBy('createdAt', 'desc')
+                        .onSnapshot(snapshot => {
+                            notifications = [];
+                            snapshot.forEach(doc => {
+                                const order = { id: doc.id, ...doc.data() };
+                                notifications.push({
+                                    id: doc.id,
+                                    title: `Pesanan #${order.queueNumber}`,
+                                    message: `Status: ${order.status}`,
+                                    timestamp: order.createdAt
+                                });
+                            });
+                            
+                            updateNotificationsUI();
+                        });
+                }
+        
+                function updateNotificationsUI() {
+                    const notificationsList = document.getElementById('notificationsList');
+                    const noNotifications = document.getElementById('noNotifications');
+                    const notificationCount = document.getElementById('notificationCount');
+                    
+                    if (notifications.length === 0) {
+                        notificationsList.innerHTML = '';
+                        noNotifications.classList.remove('hidden');
+                        notificationCount.classList.add('hidden');
+                    } else {
+                        noNotifications.classList.add('hidden');
+                        notificationCount.classList.remove('hidden');
+                        notificationCount.textContent = notifications.length;
+                        
+                        notificationsList.innerHTML = '';
+                        notifications.forEach(notification => {
+                            const notifElement = document.createElement('div');
+                            notifElement.className = 'p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500';
+                            notifElement.innerHTML = `
+                                <h4 class="font-semibold text-gray-800">${notification.title}</h4>
+                                <p class="text-sm text-gray-600">${notification.message}</p>
+                                <p class="text-xs text-gray-500 mt-2">${formatDate(notification.timestamp.toDate())}</p>
+                            `;
+                            notificationsList.appendChild(notifElement);
+                        });
+                    }
+                }
+        
+                // Initialize app
+                document.addEventListener('DOMContentLoaded', () => {
+                    // Load menu on startup
+                    loadMenu();
+                    
+                    // Set up form handlers
+                    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+                    document.getElementById('registerForm').addEventListener('submit', handleRegister);
                 });
-            } catch (error) {
-                console.error('Error creating notification:', error);
-            }
-        }
-
-        // Send queue notification
-        async function sendQueueNotification(userId, queueNumber) {
-            const message = `Antrian nomor ${queueNumber}, silahkan ambil pesanan Anda`;
-            await createNotification(userId, 'Pesanan Siap Diambil!', message, 'queue');
-        }
-
-        // Initialize menu on load
-        document.addEventListener('DOMContentLoaded', function () {
-            // Only initialize if on user app
-            if (!window.location.pathname.includes('admin.html')) {
-                loadMenu();
-
-                // Setup event listeners
-                document.getElementById('loginForm').addEventListener('submit', handleLogin);
-                document.getElementById('registerForm').addEventListener('submit', handleRegister);
-            }
-        });
-    </script>
-</body>
-
-</html>
+            </script>
+        </body>
+        </html>
